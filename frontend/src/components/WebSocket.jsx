@@ -17,7 +17,7 @@ export const WebSocketProvider = ({ children }) => {
         const isAuth = localStorage.getItem('isAuth')
         isAuth && dispatch(loginUser())
 
-        const socket = io('http://78.24.217.40:5000/')
+        const socket = io(`http://${window.location.hostname}:5000/`) 
 
         const uploader = new SocketIOFileUpload(socket);
 

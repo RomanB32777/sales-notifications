@@ -71,7 +71,7 @@ const CreateBlock = () => {
                 form.setFieldsValue({
                     img: [{
                         status: 'done',
-                        url: 'http://78.24.217.40:5000/images/' + event.detail.name
+                        url: `http://${window.location.hostname}:5000/images/` + event.detail.name
                     }]
                 });
 

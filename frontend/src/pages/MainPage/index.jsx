@@ -42,7 +42,7 @@ const MainPage = () => {
                 <Row className="message-block">
                     <Col span={10}>
                         <div className="message-block_img">
-                            <img src={message.img ? `http://78.24.217.40:5000/images/${message.img}` : testImg} alt="test" />
+                            <img src={message.img ? `http://${window.location.hostname}:5000/images/${message.img}` : testImg} alt="test" />
                         </div>
                     </Col>
                     <Col span={14} >
