@@ -6,5 +6,6 @@ export const initialState = {
     },
     message: {
         active: false
-    }
+    },
+    error: {}
 }

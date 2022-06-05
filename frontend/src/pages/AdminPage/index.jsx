@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Form, Input, Button, InputNumber, Upload, Select, message } from 'antd';
+import { Form, Input, Button, InputNumber, Upload, Select, message, Alert, Skeleton } from 'antd';
 import { WebSocketContext } from '../../components/WebSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/actions/appActions';
@@ -56,6 +56,7 @@ const AuthBlock = () => {
 };
 
 const CreateBlock = () => {
+    const { error, loading } = useSelector(state => state)
     const { socket, uploader } = useContext(WebSocketContext);
     const uploadInputRef = useRef(null);
     const [userImg, setUserImg] = useState(null);
@@ -81,7 +82,7 @@ const CreateBlock = () => {
 
     useEffect(() => {
         initUploader(socket, uploadInputRef)
-    }, [socket])
+    }, [socket, uploadInputRef])
 
     const onPreview = async file => {
         let src = file.url;
@@ -117,6 +118,19 @@ const CreateBlock = () => {
             }
         }
     };
+
+    if (!!Object.keys(error).length && !socket.connected)
+        return (
+            <Alert
+                message={error.message}
+                description={error.description}
+                type="error"
+            />
+        )
+
+    if (!socket || loading) {
+        return <Skeleton active />
+    }
 
     return (
         <Form
@@ -184,6 +198,7 @@ const CreateBlock = () => {
                     maxCount={1}
                     ref={uploadInputRef}
                     onPreview={onPreview}
+                    accept=".jpg, .jpeg, .png"
                 >
                     Выбрать фото
                 </Upload>
