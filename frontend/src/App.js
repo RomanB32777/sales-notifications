@@ -10,7 +10,7 @@ import AdminPage from './pages/AdminPage';
 import MainPage from './pages/MainPage';
 
 import './assets/style/normalize.css';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import './App.css';
 import { Layout } from "antd";
 import HeaderBlock from "./components/HeaderBlock";
