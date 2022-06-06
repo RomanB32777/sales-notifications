@@ -28,6 +28,7 @@ const Pages = () => {
 }
 
 function App() {
+  console.log(process.env.BACKEND_PORT);
   return (
     <div className="App">
       <Provider store={store}>

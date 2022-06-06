@@ -17,7 +17,11 @@ services:
       - NODE_ENV=production
 
   react:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - BACKPORT=5000  
     depends_on:
       - backend
       - nginx

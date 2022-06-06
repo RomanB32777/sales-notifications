@@ -51,7 +51,7 @@ export const WebSocketProvider = ({ children }) => {
         setValueContext({ socket })
 
         return () => { socket.disconnect() }
-    }, [])
+    }, [dispatch])
 
 
     return (

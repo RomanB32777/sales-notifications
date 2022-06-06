@@ -1,20 +1,20 @@
 @font-face {
   font-family: 'PlayfairDisplay';
-  src: url('./assets/fonts/PlayfairDisplay-Regular.ttf') format('ttf');
+  src: url('./assets/fonts/PlayfairDisplay-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
 	font-family: 'PlayfairDisplay';
-	src: url('./assets/fonts/PlayfairDisplay-Medium.ttf') format('ttf');
+	src: url('./assets/fonts/PlayfairDisplay-Medium.ttf') format('truetype');
 	font-weight: 500;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'PlayfairDisplay';
-	src: url('./assets/fonts/PlayfairDisplay-SemiBold.ttf') format('ttf');
+	src: url('./assets/fonts/PlayfairDisplay-SemiBold.ttf') format('truetype');
 	font-weight: 600;
 	font-style: normal;
 }

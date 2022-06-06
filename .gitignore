@@ -27,3 +27,4 @@ frontend/yarn-error.log*
 # BACK
 
 backend/node_modules
+backend/uploads/*

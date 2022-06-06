@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Drawer, Button, Row, Col } from 'antd';
 import testImg from '../../assets/images/Dubai.jpg'
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,11 +21,12 @@ const MainPage = () => {
         stop()
     };
 
-    useEffect(() => {
-        if (message.active && message.isNewMessage) {
+    const playMusic = useCallback(() => {
+        if (message.active && message.isNewMessage)
             play()
-        }
-    }, [message])
+    }, [message, play])
+
+    useEffect(() => playMusic(), [playMusic])
 
     return (
         <div className="page">

@@ -75,13 +75,14 @@
         &__results {
             display: flex;
             justify-content: space-around;
+            align-items: flex-end;
             margin-bottom: 3rem;
 
             .block-result {
                 position: relative;
-                min-width: 20rem;
+                width: 20rem;
                 text-align: center;
-                font-size: 2.3rem;
+                font-size: 2.1rem;
                 color: var(--main-text-color);
 
                 &::before {
@@ -119,6 +120,35 @@
                 }
 
 
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 1800px) {
+    .message-block {
+        &_content {
+            &__title {
+                font-size: 5rem;
+            }
+
+            &__subtitle {
+                font-size: 4rem;
+            }
+
+            &__txt {
+                font-size: 3.3rem;
+            }
+
+            &__results {
+                .block-result {
+                    font-size: 2.8rem;
+                    width: 30rem;
+
+                    &::after {
+                        font-size: 1.5rem;
+                    }
+                }
             }
         }
     }

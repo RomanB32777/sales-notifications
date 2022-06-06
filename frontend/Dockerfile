@@ -8,6 +8,10 @@ RUN npm install
 
 COPY . .
 
+ARG BACKPORT
+
+ENV BACKEND_PORT=$BACKPORT
+
 RUN npm run build
 
 
