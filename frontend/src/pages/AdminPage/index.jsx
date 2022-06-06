@@ -72,11 +72,14 @@ const CreateBlock = () => {
             const formData = new FormData()
             formData.append('file', userImg)
 
-            const { data } = await axios.post(`http://${window.location.hostname}:5000/upload/file`, formData, {
-                headers: {
-                    "Content-type": "multipart/form-data",
-                }
-            })
+            const { data } = await axios.post(
+                `http://${window.location.hostname}:${process.env.REACT_APP_BACKEND_PORT || 5000}/upload/file`,
+                formData,
+                {
+                    headers: {
+                        "Content-type": "multipart/form-data",
+                    }
+                })
             cb && data.filename && cb(data.filename)
         } catch (error) {
             error.message && message.error(error.message)

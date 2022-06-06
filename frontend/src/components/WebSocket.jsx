@@ -16,7 +16,7 @@ export const WebSocketProvider = ({ children }) => {
         const isAuth = localStorage.getItem('isAuth')
         isAuth && dispatch(loginUser())
 
-        const socket = io(`http://${window.location.hostname}:5000/`)
+        const socket = io(`http://${window.location.hostname}:${process.env.REACT_APP_BACKEND_PORT || 5000}/`)
 
         dispatch(showLoading())
 

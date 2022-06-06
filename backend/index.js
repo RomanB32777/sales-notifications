@@ -9,7 +9,8 @@ const { Server } = require("socket.io");
 const moment = require('moment');
 const io = new Server(server, {
     cors: {
-        origin: process.env.NODE_ENV === 'production' ? 'http://51.250.31.52/' : '*'
+        origin: '*'
+        // origin: process.env.NODE_ENV === 'production' ? 'http://51.250.31.52:80/' : '*'
     }
 });
 
