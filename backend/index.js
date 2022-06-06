@@ -1,22 +1,41 @@
 const express = require('express');
-const siofu = require("socketio-file-upload");
 const fs = require('fs')
-
+const multer = require("multer")
 const app = express()
-    .use(siofu.router);
+
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const moment = require('moment');
 const io = new Server(server, {
     cors: {
-        origin: '*'
+        origin: process.env.NODE_ENV === 'production' ? 'http://51.250.31.52/' : '*'
     }
 });
 
 const uploadsFolderName = '/uploads'
 
 app.use('/images', express.static(__dirname + uploadsFolderName))
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+const storage = multer.diskStorage({
+    destination(req, file, cb) {
+        cb(null, __dirname + uploadsFolderName)
+    },
+    filename(req, file, cb) {
+        const fileName = file.originalname.split(' ').join('-');
+        cb(null, fileName)
+    }
+})
+
+const types = ['image/png', 'image/jpeg', 'image/jpg']
+
+const fileFilter = (req, file, cb) => types.includes(file.mimetype) ? cb(null, true) : cb(null, false)
 
 const deleteFile = fileName => fs.unlinkSync(__dirname + uploadsFolderName + "/" + fileName)
 
@@ -30,13 +49,23 @@ const deleteOldFiles = () => {
 }
 
 app.get('/', (req, res) => {
-    return res.status(201).json({ success: true, mes: 'Hi!' })
+    return res.status(200).json({ success: true, mes: 'Hi!' })
 });
+
+app.post('/upload/file', multer({ storage, fileFilter }).single('file'), (req, res) => {
+    try {
+        if (req.file) {
+            return res.status(201).json({ success: true, filename: req.file.filename })
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, error })
+    }
+})
 
 app.get('/delete/file', (req, res) => {
     try {
         req.query.name && deleteFile(req.query.name)
-        return res.status(201).json({ success: true })
+        return res.status(200).json({ success: true })
     } catch (error) {
         return res.status(500).json({ success: false, error })
     }
@@ -45,39 +74,18 @@ app.get('/delete/file', (req, res) => {
 app.get('/delete/files', (req, res) => {
     try {
         deleteOldFiles()
-        return res.status(201).json({ success: true })
+        return res.status(200).json({ success: true })
     } catch (error) {
         return res.status(500).json({ success: false, error })
     }
 })
 
 io.on('connection', (socket) => {
-    const uploader = new siofu();
-
-    uploader.dir = uploadsFolderName.slice(1);
-    uploader.listen(socket);
-
-    console.log('a user connected');
-
-    uploader.on("saved", function (event) {
-        deleteOldFiles()
-        event.file.clientDetail.name = event.file.name;
-    });
-
-    uploader.on("error", function (event) {
-        console.log("Error from uploader", event);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('a user disconnected');
-    });
-
     socket.on('new_message', (data) => {
         io.sockets.emit('add_mess', data);
     })
 });
 
-server.listen(5000, () => {
-    console.log(process.env.PORT);
-    console.log('listening on *:5000');
+server.listen(process.env.PORT || 5000, () => {
+    console.log(`listening on *:${process.env.PORT || 5000}`);
 });

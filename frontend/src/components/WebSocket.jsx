@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
-import SocketIOFileUpload from 'socketio-file-upload'
 import { clearError, hideLoading, loginUser, showLoading } from '../redux/actions/appActions';
 import { types } from '../redux/types';
 
@@ -18,8 +17,6 @@ export const WebSocketProvider = ({ children }) => {
         isAuth && dispatch(loginUser())
 
         const socket = io(`http://${window.location.hostname}:5000/`)
-
-        const uploader = new SocketIOFileUpload(socket);
 
         dispatch(showLoading())
 
@@ -51,7 +48,7 @@ export const WebSocketProvider = ({ children }) => {
             })
         })
 
-        setValueContext({ socket, uploader })
+        setValueContext({ socket })
 
         return () => { socket.disconnect() }
     }, [])

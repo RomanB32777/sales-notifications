@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Form, Input, Button, InputNumber, Upload, Select, message, Alert, Skeleton } from 'antd';
+import axios from 'axios';
 import { WebSocketContext } from '../../components/WebSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/actions/appActions';
@@ -57,32 +58,30 @@ const AuthBlock = () => {
 
 const CreateBlock = () => {
     const { error, loading } = useSelector(state => state)
-    const { socket, uploader } = useContext(WebSocketContext);
+    const { socket } = useContext(WebSocketContext);
     const uploadInputRef = useRef(null);
     const [userImg, setUserImg] = useState(null);
     const navigate = useNavigate()
 
     const [form] = Form.useForm();
 
-    const initUploader = (socket, uploadEl) => {
-        if (socket && uploadEl.current) {
-            uploader.listenOnInput(uploadEl.current.upload.uploader.fileInput)
-            uploader.addEventListener("complete", (event) => {
-                setUserImg(event.detail.name);
-                form.setFieldsValue({
-                    img: [{
-                        status: 'done',
-                        url: `http://${window.location.hostname}:5000/images/` + event.detail.name
-                    }]
-                });
+    const changeFile = ({ fileList }) => fileList && fileList[0] && setUserImg(fileList[0].originFileObj)
 
-            });
+    const sendDataWithFile = async (cb) => {
+        try {
+            const formData = new FormData()
+            formData.append('file', userImg)
+
+            const { data } = await axios.post(`http://${window.location.hostname}:5000/upload/file`, formData, {
+                headers: {
+                    "Content-type": "multipart/form-data",
+                }
+            })
+            cb && data.filename && cb(data.filename)
+        } catch (error) {
+            error.message && message.error(error.message)
         }
     }
-
-    useEffect(() => {
-        initUploader(socket, uploadInputRef)
-    }, [socket, uploadInputRef])
 
     const onPreview = async file => {
         let src = file.url;
@@ -106,13 +105,13 @@ const CreateBlock = () => {
         return e && e.fileList;
     };
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         if (socket) {
             try {
-                if (userImg) {
-                    socket.emit('new_message', { ...values, img: userImg });
+                await sendDataWithFile(userImgName => {
+                    socket.emit('new_message', { ...values, img: userImgName });
                     navigate('/')
-                }
+                })
             } catch (error) {
                 message.error('Произошла ошибка')
             }
@@ -186,11 +185,11 @@ const CreateBlock = () => {
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 extra="Загрузить фото крутого сотрудника"
-            // rules={[
-            //     {
-            //         required: true,
-            //     },
-            // ]}
+                rules={[
+                    {
+                        required: true,
+                    },
+                ]}
             >
                 <Upload
                     beforeUpload={() => false}
@@ -199,6 +198,7 @@ const CreateBlock = () => {
                     ref={uploadInputRef}
                     onPreview={onPreview}
                     accept=".jpg, .jpeg, .png"
+                    onChange={changeFile}
                 >
                     Выбрать фото
                 </Upload>
