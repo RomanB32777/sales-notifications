@@ -8,7 +8,6 @@ import sound from '../../assets/sounds/fanfary.mp3'
 import "./style.scss";
 
 const formatNumber = (value, currency) => {
-    console.log(value, currency);
     return Intl.NumberFormat('Ru-ru', {
         style: 'currency',
         currency: currency,
@@ -67,7 +66,6 @@ const MainPage = () => {
 
                                 <p className="message-block_content__txt">
                                     Сделка прошла успешно!
-                                    {/* , а наши брокеры помогли найти подходящий способ оплаты! */}
                                 </p>
                             </div>
 
@@ -78,7 +76,6 @@ const MainPage = () => {
 
                                 <div className="block-result block-result__value">
                                     {message.value && message.currency && formatNumber(message.value, message.currency)}
-                                    {/* {} {message.currency} */}
                                 </div>
                             </div>
                         </div>
