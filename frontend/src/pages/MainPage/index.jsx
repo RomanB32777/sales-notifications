@@ -7,6 +7,15 @@ import { hideDrawer, showDrawer } from '../../redux/actions/appActions';
 import sound from '../../assets/sounds/fanfary.mp3'
 import "./style.scss";
 
+const formatNumber = (value, currency) => {
+    console.log(value, currency);
+    return Intl.NumberFormat('Ru-ru', {
+        style: 'currency',
+        currency: currency,
+        maximumFractionDigits: 0,
+    }).format(Number(value))
+}
+
 const MainPage = () => {
     const { message } = useSelector(state => state)
     const dispatch = useDispatch()
@@ -68,7 +77,8 @@ const MainPage = () => {
                                 </div>
 
                                 <div className="block-result block-result__value">
-                                    {message.value} {message.currency}
+                                    {message.value && message.currency && formatNumber(message.value, message.currency)}
+                                    {/* {} {message.currency} */}
                                 </div>
                             </div>
                         </div>

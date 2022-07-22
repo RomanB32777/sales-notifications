@@ -8,10 +8,10 @@ import { useNavigate } from 'react-router';
 import "./style.scss";
 
 const currencyTypes = [
-    { value: "₽", label: "₽" },
-    { value: "$", label: "$" },
+    { value: "RUB", label: "₽" },
+    { value: "USD", label: "$" },
     { value: "AED", label: "AED" },
-    { value: "€", label: "€" }
+    { value: "EUR", label: "€" }
 ];
 
 const CurrencyTypeSelect = <Select options={currencyTypes} size="middle" placeholder="Валюта" />;
