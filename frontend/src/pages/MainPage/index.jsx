@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import { Drawer, Button, Row, Col } from 'antd';
-import testImg from '../../assets/images/Dubai.jpg'
 import { useDispatch, useSelector } from 'react-redux';
 import useSound from 'use-sound';
 import { hideDrawer, showDrawer } from '../../redux/actions/appActions';
+import testImg from '../../assets/images/Dubai.jpg'
 import sound from '../../assets/sounds/fanfary.mp3'
 import "./style.scss";
 
