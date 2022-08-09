@@ -55,6 +55,7 @@ app.get('/', (req, res) => {
 
 app.post('/upload/file', multer({ storage, fileFilter }).single('file'), (req, res) => {
     try {
+        deleteOldFiles()
         if (req.file) {
             return res.status(201).json({ success: true, filename: req.file.filename })
         }
