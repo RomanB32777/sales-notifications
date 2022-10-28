@@ -11,13 +11,13 @@
     "backend:install": "npm install --prefix backend",
     "install": "concurrently \"npm run frontend:install\" \"npm run backend:install\"",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
-    "dumpSql": "docker exec -i db_1 pg_dump --username postgres -d user > /home/project/dump.sql",
-    "execSql": "docker exec -it db_1 psql  -U postgres -d user",
-    "dockerUp": "docker-compose up -d --build",
-    "dockerStop": "docker-compose stop",
-    "dockerDown": "docker-compose down",
-    "dockerRmiDangling": "docker rmi $(docker images -f dangling=true -q)",
-    "dockerClear": "docker system prune -a -f"
+    "dumpSql": "sudo docker exec -i db_1 pg_dump --username postgres -d user > /home/project/dump.sql",
+    "execSql": "sudo docker exec -it db_1 psql  -U postgres -d user",
+    "dockerUp": "sudo docker compose up -d --build",
+    "dockerStop": "sudo docker compose stop",
+    "dockerDown": "sudo docker compose down",
+    "dockerRmiDangling": "sudo docker rmi $(sudo docker images -f dangling=true -q)",
+    "dockerClear": "sudo docker system prune -a -f"
   },
   "repository": {
     "type": "git",

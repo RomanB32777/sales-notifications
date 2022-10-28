@@ -1,8 +1,7 @@
 import { Badge } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { currencyTypes } from "../../consts";
 import { IFilterSettings, ITransactionTopList } from "../../types";
-import { getFilterSettings } from "../../utils";
+import { formatNumber, getFilterSettings } from "../../utils";
 
 export const tableColumns: ColumnsType<ITransactionTopList> = [
   {
@@ -43,12 +42,8 @@ export const tableColumns: ColumnsType<ITransactionTopList> = [
     align: "center",
     render: (sum) => {
       const settings: IFilterSettings = getFilterSettings();
-      const currencyRender = currencyTypes[settings?.currency];
-      return (
-        <>
-          {sum && parseFloat(sum).toFixed(2)} {currencyRender}
-        </>
-      );
+      return <>{sum && formatNumber(sum, settings.currency)}</>;
     },
   },
+  // parseFloat(sum).toFixed(2)
 ];

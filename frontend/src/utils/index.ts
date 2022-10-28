@@ -4,7 +4,7 @@ import {
   getCurrentTimePeriodQuery,
 } from "./dateMethods";
 import { filter_settings_key, init_filter_settings } from "../consts";
-import { IFilterSettings } from "../types";
+import { ICurrenciesTypes, IFilterSettings } from "../types";
 
 const setFilterSettings = (settings: IFilterSettings) =>
   sessionStorage.setItem(filter_settings_key, JSON.stringify(settings));
@@ -14,7 +14,7 @@ const getFilterSettings = () => {
   return fromStorage ? JSON.parse(fromStorage) : init_filter_settings;
 };
 
-const formatNumber = (value: number, currency: string) => {
+const formatNumber = (value: number, currency: ICurrenciesTypes) => {
   return Intl.NumberFormat("Ru-ru", {
     style: "currency",
     currency: currency,

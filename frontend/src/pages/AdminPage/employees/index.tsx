@@ -51,7 +51,7 @@ const EmployeesBlock = () => {
             ]}
           >
             <List.Item.Meta
-              avatar={<Avatar size={100} src={employee_photo} />}
+              avatar={<Avatar size={100} src={`/images/${employee_photo}`} />}
               title={employee_name}
             />
           </List.Item>
