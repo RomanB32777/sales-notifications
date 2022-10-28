@@ -1,0 +1,35 @@
+{
+  "name": "sales-notifications",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "frontend": "npm start --prefix frontend",
+    "frontend:install": "npm install --prefix frontend",
+    "frontend:build": "npm  run build --prefix frontend",
+    "backend": "npm run dev --prefix backend",
+    "backend:install": "npm install --prefix backend",
+    "install": "concurrently \"npm run frontend:install\" \"npm run backend:install\"",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "dumpSql": "docker exec -i db_1 pg_dump --username postgres -d user > /home/project/dump.sql",
+    "execSql": "docker exec -it db_1 psql  -U postgres -d user",
+    "dockerUp": "docker-compose up -d --build",
+    "dockerStop": "docker-compose stop",
+    "dockerDown": "docker-compose down",
+    "dockerRmiDangling": "docker rmi $(docker images -f dangling=true -q)",
+    "dockerClear": "docker system prune -a -f"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RomanB32777/sales-notifications.git"
+  },
+  "author": "Roman <r.bogdanovskiy@onpoint.ru>",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.2.2"
+  },
+  "bugs": {
+    "url": "https://github.com/RomanB32777/sales-notifications/issues"
+  },
+  "homepage": "https://github.com/RomanB32777/sales-notifications#readme"
+}
