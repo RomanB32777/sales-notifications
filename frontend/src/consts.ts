@@ -1,4 +1,4 @@
-import { ICurrencies, IFilterSettings } from "./types";
+import { ICurrencies, ISettings } from "./types";
 
 export const currencyTypes: ICurrencies = {
   RUB: "₽",
@@ -9,7 +9,9 @@ export const currencyTypes: ICurrencies = {
 
 export const filter_settings_key = "filter_settings";
 
-export const init_filter_settings: IFilterSettings = {
+export const init_filter_settings: ISettings = {
   time_period: "month",
-  currency: "USD",
+  currency: "AED",
+  top_level: 100,
+  middle_level: 10,
 };

@@ -1,41 +1,52 @@
-import { Button, Form, message, Select } from "antd";
-import { useEffect } from "react";
+import { Button, Form, InputNumber, message, Select, Skeleton } from "antd";
+import { useEffect, useState } from "react";
 import LayoutBlock from "../../../components/LayoutBlock";
-import { getFilterSettings, setFilterSettings } from "../../../utils";
+import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
+
+import axiosClient from "../../../axiosClient";
 import { IPeriodItemsTypes } from "../../../utils/dateMethods/types";
 import { currencyTypes } from "../../../consts";
-import {
-  periodItems,
-  time_period_key,
-} from "../../../utils/dateMethods/consts";
-import { ICurrenciesTypes, IFilterSettings } from "../../../types";
+import { periodItems } from "../../../utils/dateMethods/consts";
+import { ICurrenciesTypes, ISettings } from "../../../types";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { setSettings } from "../../../redux/types/Settings";
 
 const { Option } = Select;
 
 const SettingsBlock = () => {
-  const [form] = Form.useForm<IFilterSettings>();
+  const dispatch = useAppDispatch();
+  const { settings, loading } = useAppSelector((state) => state);
+  const [currencySelect, setCurrencySelect] = useState<string>();
 
-  const onFinish = async (values: IFilterSettings) => {
+  const [form] = Form.useForm<ISettings>();
+
+  const onFinish = async (values: ISettings) => {
     try {
-      setFilterSettings(values);
-      message.success("Изменения сохранены");
+      const new_settings = await axiosClient.put(`/api/settings/`, {
+        ...values,
+      });
+      if (new_settings.status === 200) {
+        dispatch(setSettings(new_settings.data));
+        message.success("Изменения сохранены");
+      } else message.error("Произошла ошибка");
     } catch (error) {
       message.error("Произошла ошибка");
     }
   };
 
   useEffect(() => {
-    const settings: IFilterSettings = getFilterSettings();
-    form.setFieldsValue({
-      time_period: (settings?.time_period as IPeriodItemsTypes) || "month",
-      currency: (settings?.currency as ICurrenciesTypes) || "RUB",
-    });
-  }, []);
+    settings &&
+      form.setFieldsValue({
+        ...settings,
+      });
+  }, [settings]);
+
+  if (loading) return <Skeleton active />;
 
   return (
     <LayoutBlock title={"Настройки"}>
       <Form form={form} name="create-message" onFinish={onFinish}>
-        <Form.Item name={time_period_key} label="Фильтрация">
+        <Form.Item name="time_period" label="Фильтрация">
           <Select>
             {Object.keys(periodItems).map((key) => (
               <Option value={key} key={key}>
@@ -44,16 +55,61 @@ const SettingsBlock = () => {
             ))}
           </Select>
         </Form.Item>
+
         <Form.Item name="currency" label="Основная валюта">
-          <Select disabled>
+          <Select onSelect={(value: string) => setCurrencySelect(value)}>
             {Object.keys(currencyTypes).map((key) => (
               <Option value={key} key={key}>
                 {currencyTypes[key as ICurrenciesTypes]}
               </Option>
             ))}
-            {/* */}
           </Select>
         </Form.Item>
+
+        <Form.Item
+          name="top_level"
+          label="Уровень топ"
+          rules={[
+            {
+              type: "number",
+              min: 0,
+            },
+          ]}
+        >
+          <InputNumber
+            style={{ width: "100%" }}
+            type="number"
+            addonAfter={
+              <CurrencyTypeSelect
+                value={currencySelect || settings?.currency}
+                disabled
+              />
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="middle_level"
+          label="Уровень средний"
+          rules={[
+            {
+              type: "number",
+              min: 0,
+            },
+          ]}
+        >
+          <InputNumber
+            style={{ width: "100%" }}
+            type="number"
+            addonAfter={
+              <CurrencyTypeSelect
+                value={currencySelect || settings?.currency}
+                disabled
+              />
+            }
+          />
+        </Form.Item>
+
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Сохранить

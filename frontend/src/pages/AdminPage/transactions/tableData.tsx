@@ -1,7 +1,10 @@
 import type { ColumnsType } from "antd/es/table";
-import { currencyTypes } from "../../../consts";
 import { ITransaction } from "../../../types";
-import { DateFormatter, DateTimezoneFormatter } from "../../../utils";
+import {
+  DateFormatter,
+  DateTimezoneFormatter,
+  formatNumber,
+} from "../../../utils";
 
 interface ITableData extends ITransaction {
   employee_name: string;
@@ -21,7 +24,7 @@ export const tableColumns: ColumnsType<ITransaction> = [
     key: "transaction_value",
     width: "15%",
     align: "center",
-    render: (text, { currency }) => text + ` ${currencyTypes[currency]}`,
+    render: (value, { currency }) => currency && formatNumber(value, currency),
     sorter: (a, b) => a.transaction_value - b.transaction_value,
   },
   {

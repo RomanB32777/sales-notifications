@@ -11,7 +11,7 @@ const AdminPage = () => {
   const user = useAppSelector((state) => state.user);
 
   return (
-    <div className="page">
+    <div className="page page-padding">
       {!user.isAuth ? (
         <AuthBlock />
       ) : (

@@ -1,5 +1,6 @@
 const axios = require("axios");
 const db = require("../db");
+const { currencies, initFilteredTopList } = require("../conts");
 const { getTimeCurrentPeriod } = require("../utils");
 
 class TransactionController {
@@ -48,22 +49,58 @@ class TransactionController {
 
   async getTransactions(req, res) {
     try {
-      const { time_period, currency } = req.query;
-      if (time_period && currency) {
-        const axiosCurrencyToUSD = await axios.get(
-          "https://cdn.cur.su/api/latest.json"
-        );
-        const currencyToUSDList = axiosCurrencyToUSD.status === 200 && axiosCurrencyToUSD.data.rates
+      const queryParams = req.query;
+      if (Object.keys(queryParams).length) {
+        const { time_period, currency, top_level, middle_level } = queryParams;
+        const currenciesSymbols = currencies.filter((c) => c !== currency);
+        let currencyToUSDList = {};
 
+        const select_exchange_rate = await db.query(
+          `
+          SELECT rates 
+          FROM exchange_rates 
+          WHERE base = $1 AND date_trunc('day', update_at) = date_trunc('day', current_date)`,
+          [currency]
+        );
+
+        if (select_exchange_rate.rows.length) {
+          currencyToUSDList = JSON.parse(select_exchange_rate.rows[0].rates);
+        } else {
+          const axiosCurrencyToUSD = await axios.get(
+            `https://api.apilayer.com/exchangerates_data/latest?symbols=${currenciesSymbols.join(
+              ","
+            )}&base=${currency}`,
+            {
+              headers: {
+                apikey:
+                  process.env.EXC_API_KEY || "KEY_HERE",
+              },
+            }
+          );
+
+          if (axiosCurrencyToUSD.status === 200) {
+            currencyToUSDList = axiosCurrencyToUSD.data.rates;
+            await db.query(
+              `INSERT INTO exchange_rates (base, rates)
+                VALUES ($1, $2)
+                ON CONFLICT (base)
+                DO UPDATE SET
+                rates=$2,
+                update_at=now()
+              `,
+              [currency, JSON.stringify(currencyToUSDList)]
+            );
+          }
+        }
         const transactions = await db.query(`
-          SELECT e.id, e.employee_name, e.employee_photo, SUM(
-            t.transaction_value::numeric / CASE t.currency
-                WHEN 'EUR' THEN ${currencyToUSDList["EUR"]}
-                WHEN 'RUB' THEN ${currencyToUSDList["RUB"]}
-                WHEN 'AED' THEN ${currencyToUSDList["AED"]}
+          SELECT e.id, e.employee_name, e.employee_photo, ROUND(SUM(
+            t.transaction_value / CASE t.currency
+              ${currenciesSymbols
+                .map((c) => `WHEN '${c}' THEN ${currencyToUSDList[c]}`)
+                .join(" ")}
             ELSE 1
             END
-          ) AS sum_transactions
+          ))::integer AS sum_transactions
           FROM transactions t
           LEFT JOIN employees e
           ON t.employee_id = e.id 
@@ -72,7 +109,31 @@ class TransactionController {
             time_period
           )} GROUP BY e.id, e.employee_name, e.employee_photo
           ORDER BY sum_transactions DESC`);
-        return res.status(200).json(transactions.rows);
+
+        const filteredTransactions = transactions.rows.length
+          ? transactions.rows.reduce((acc, curr) => {
+              if (curr.sum_transactions >= top_level)
+                return {
+                  ...acc,
+                  top_level: [...acc.top_level, curr],
+                };
+              else if (
+                curr.sum_transactions >= middle_level &&
+                curr.sum_transactions < top_level
+              )
+                return {
+                  ...acc,
+                  middle_level: [...acc.middle_level, curr],
+                };
+              else
+                return {
+                  ...acc,
+                  low_level: [...acc.low_level, curr],
+                };
+            }, initFilteredTopList)
+          : initFilteredTopList;
+
+        return res.status(200).json(filteredTransactions);
       }
       const transactions = await db.query(`
         SELECT t.*, e.employee_name, e.employee_photo FROM transactions t

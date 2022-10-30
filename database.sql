@@ -8,12 +8,30 @@ create TABLE employees(
 create TABLE transactions(
     id SERIAL PRIMARY KEY,
     project_name VARCHAR DEFAULT '',
-    transaction_value NUMERIC DEFAULT 0,
+    transaction_value INTEGER DEFAULT 0,
     currency VARCHAR(10) DEFAULT '',
     employee_id INTEGER,
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT Now() 
 );
+
+create TABLE settings(
+    id SERIAL PRIMARY KEY,
+    time_period VARCHAR(10) DEFAULT 'month',
+    currency VARCHAR(10) DEFAULT 'AED',
+    duration_congratulation INTEGER DEFAULT 5,
+    top_level INTEGER DEFAULT 100,
+    middle_level INTEGER DEFAULT 10,
+    CHECK (top_level > middle_level)
+);
+
+create TABLE exchange_rates(
+    base VARCHAR(10) DEFAULT 'AED' PRIMARY KEY,
+    rates VARCHAR DEFAULT '',
+    update_at TIMESTAMPTZ DEFAULT Now() 
+);
+
+INSERT INTO settings (time_period) values ('month');
 
 -- CREATE TABLE employees_transactions
 -- (

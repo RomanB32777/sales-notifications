@@ -1,25 +1,38 @@
+import type { RcFile } from "antd/es/upload/interface";
 import {
   DateTimezoneFormatter,
   DateFormatter,
   getCurrentTimePeriodQuery,
 } from "./dateMethods";
-import { filter_settings_key, init_filter_settings } from "../consts";
-import { IFilterSettings } from "../types";
+import { ICurrenciesTypes } from "../types";
+import { message } from "antd";
+import axiosClient from "../axiosClient";
 
-const setFilterSettings = (settings: IFilterSettings) =>
-  sessionStorage.setItem(filter_settings_key, JSON.stringify(settings));
-  
-const getFilterSettings = () => {
-  const fromStorage = sessionStorage.getItem(filter_settings_key);
-  return fromStorage ? JSON.parse(fromStorage) : init_filter_settings;
-};
-
-const formatNumber = (value: number, currency: string) => {
+const formatNumber = (value: number, currency: ICurrenciesTypes) => {
   return Intl.NumberFormat("Ru-ru", {
     style: "currency",
     currency: currency,
     maximumFractionDigits: 0,
   }).format(value);
+};
+
+const sendDataWithFile = async (
+  img: RcFile,
+  cb: (fileName: string) => Promise<void>
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", img);
+
+    const { data } = await axiosClient.post(`/api/file/`, formData, {
+      headers: {
+        "Content-type": "multipart/form-data",
+      },
+    });
+    cb && data.filename && (await cb(data.filename));
+  } catch (error) {
+    (error as Error).message && message.error((error as Error).message);
+  }
 };
 
 export {
@@ -28,10 +41,9 @@ export {
   DateFormatter,
   getCurrentTimePeriodQuery,
 
-  //filter settings
-  setFilterSettings,
-  getFilterSettings,
-
   // number
   formatNumber,
+
+  // files
+  sendDataWithFile,
 };

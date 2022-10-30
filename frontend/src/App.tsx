@@ -1,42 +1,49 @@
-import {
-  BrowserRouter as Router,
-  useRoutes,
-} from "react-router-dom";
-import { Provider } from 'react-redux';
+import { useEffect } from "react";
+import { BrowserRouter as Router, useRoutes } from "react-router-dom";
+import { Provider } from "react-redux";
 import { Layout } from "antd";
 
-import store from './redux';
 import { WebSocketProvider } from "./components/WebSocket";
-import AdminPage from './pages/AdminPage';
-import MainPage from './pages/MainPage';
+import AdminPage from "./pages/AdminPage";
+import MainPage from "./pages/MainPage";
+import CongratulationPage from "./pages/CongratulationPage";
 import HeaderBlock from "./components/HeaderBlock";
+import store from "./redux";
+import { useAppDispatch } from "./redux/hooks";
+import { getSettings } from "./redux/types/Settings";
 
-import './assets/style/normalize.css';
-import 'antd/dist/antd.min.css';
-import './App.css';
+import "./assets/style/normalize.css";
+import "antd/dist/antd.min.css";
+import "./App.css";
 
 const { Content } = Layout;
 
 export const routers = [
-  { path: '/', element: <MainPage /> },
-  { path: '/admin', element: <AdminPage /> },
-]
+  { path: "/", name: "Главная", element: <MainPage /> },
+  { path: "/congratulation", name: "Поздравление", element: <CongratulationPage /> },
+  { path: "/admin", name: "Админ", element: <AdminPage /> },
+];
 
 const Pages = () => {
-  const el = useRoutes(routers)
-  return el;
-}
+  const dispatch = useAppDispatch();
 
-function App() {
+  useEffect(() => {
+    dispatch(getSettings());
+  }, []);
+
+  const el = useRoutes(routers);
+  return el;
+};
+
+const App = () => {
   return (
     <div className="App">
       <Provider store={store}>
         <WebSocketProvider>
-          <Layout >
-          {/* style={{ height: '100vh' }} */}
+          <Layout>
             <Router>
               <HeaderBlock />
-              <Content style={{ height: '100%', padding: '0 50px' }}>
+              <Content style={{ height: "100%" }}>
                 <div className="site-layout-content">
                   <Pages />
                 </div>
@@ -47,6 +54,6 @@ function App() {
       </Provider>
     </div>
   );
-}
+};
 
 export default App;

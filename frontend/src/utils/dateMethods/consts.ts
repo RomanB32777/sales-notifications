@@ -1,6 +1,6 @@
 import { IPeriods } from "./types";
 
-export const time_period_key = "time_period";
+// export const time_period_key = "time_period";
 
 export const periodItems: IPeriods = {
   day: "За день",

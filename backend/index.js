@@ -7,6 +7,7 @@ const { uploadsFolderName } = require("./conts");
 const employeeRouter = require("./routes/employee.routes");
 const transactionRouter = require("./routes/transaction.routes");
 const fileRouter = require("./routes/file.routes");
+const settingsRouter = require("./routes/settings.routes");
 const socketHandler = require("./sockets");
 
 const http = require("http");
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 app.use("/api/employee/", employeeRouter);
 app.use("/api/transaction/", transactionRouter);
 app.use("/api/file/", fileRouter);
+app.use("/api/settings/", settingsRouter);
 
 io.on("connection", (socket) => socketHandler(socket, io));
 

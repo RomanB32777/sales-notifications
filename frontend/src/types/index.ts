@@ -1,4 +1,3 @@
-import { time_period_key } from './../utils/dateMethods/consts';
 import { IUser, IUserAction } from "./user";
 import { IMessage, IMessageAction } from "./message";
 import {
@@ -6,12 +5,12 @@ import {
   ITransactionShort,
   ITransactionFull,
   ITransactionTopList,
+  ITopList,
+  ITransactionsState,
   ITransactionsAction,
 } from "./transaction";
 import { IEmployee, IEmployeeShort, IEmployeeAction } from "./employee";
-import { IPeriodItemsTypes } from '../utils/dateMethods/types';
-
-type ICurrenciesTypes = "RUB" | "USD" | "AED" | "EUR"
+import { ICurrenciesTypes, ISettings } from "./settings";
 
 type ICurrencies = {
   [key in ICurrenciesTypes]: string;
@@ -32,11 +31,6 @@ interface IAnyAction {
   payload: any;
 }
 
-interface IFilterSettings {
-  [time_period_key]: IPeriodItemsTypes,
-  currency: ICurrenciesTypes
-}
-
 export type {
   IFileInfo,
   ICurrenciesTypes,
@@ -46,6 +40,8 @@ export type {
   ITransactionShort,
   ITransactionFull,
   ITransactionTopList,
+  ITopList,
+  ITransactionsState,
   ITransactionsAction,
   IEmployee,
   IEmployeeShort,
@@ -55,5 +51,5 @@ export type {
   IMessageAction,
   IUser,
   IUserAction,
-  IFilterSettings,
+  ISettings,
 };

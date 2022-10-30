@@ -58,7 +58,7 @@ export const WebSocketProvider = ({
     return () => {
       socket.disconnect();
     };
-  }, [dispatch]);
+  }, []);
 
   return (
     <WebSocketContext.Provider value={valueContext}>

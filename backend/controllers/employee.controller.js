@@ -66,11 +66,11 @@ class EmployeeController {
       const { id, employee_name, employee_photo } = req.body;
 
       const editedEmployee = await db.query(
-        `UPDATE employees SET employee_name = $1, employee_photo = $2 where id = $2 RETURNING *`,
+        `UPDATE employees SET employee_name = $1, employee_photo = $2 where id = $3 RETURNING *`,
         [employee_name, employee_photo, id]
       );
 
-      res.status(200).json(editedEmployee.rows[0]);
+      res.status(200).json();
     } catch (error) {
       res
         .status(error.status || 500)

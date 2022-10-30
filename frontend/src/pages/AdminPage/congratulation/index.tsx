@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -8,35 +8,20 @@ import {
   Input,
   InputNumber,
   message,
-  Select,
   Skeleton,
-  Upload,
 } from "antd";
-import type { RcFile, UploadProps, UploadFile } from "antd/es/upload/interface";
+import type { RcFile, UploadProps } from "antd/es/upload/interface";
 
 import { useAppSelector } from "../../../redux/hooks";
-import axiosClient from "../../../axiosClient";
 
 import LayoutBlock from "../../../components/LayoutBlock";
 import { WebSocketContext } from "../../../components/WebSocket";
-import {
-  ICurrenciesTypes,
-  IFilterSettings,
-  ITransactionShort,
-} from "../../../types";
-import { currencyTypes } from "../../../consts";
-import { getFilterSettings } from "../../../utils";
+import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
+import UploadPhoto from "../../../components/UploadPhoto";
 
-const CurrencyTypeSelect = (
-  <Select
-    options={Object.keys(currencyTypes).map((key) => ({
-      value: key,
-      label: currencyTypes[key as ICurrenciesTypes],
-    }))}
-    size="middle"
-    placeholder="Валюта"
-  />
-);
+import axiosClient from "../../../axiosClient";
+import { sendDataWithFile } from "../../../utils";
+import { ITransactionShort } from "../../../types";
 
 interface IAutoCompleteOption {
   value: string;
@@ -48,9 +33,10 @@ interface IFormData extends ITransactionShort {
 }
 
 const CongratulationFormBlock = () => {
-  const { employees, error, loading } = useAppSelector((state) => state);
+  const { employees, settings, error, loading } = useAppSelector(
+    (state) => state
+  );
   const socket = useContext(WebSocketContext);
-  const uploadInputRef = useRef(null);
   const [userImg, setUserImg] = useState<RcFile>();
   const [employeeSelected, setEmployeeSelected] =
     useState<IAutoCompleteOption | null>(null);
@@ -58,48 +44,15 @@ const CongratulationFormBlock = () => {
 
   const [form] = Form.useForm<IFormData>();
 
-  const changeFile: UploadProps["onChange"] = ({ fileList }) =>
-    fileList && fileList[0] && setUserImg(fileList[0].originFileObj);
-
-  const sendDataWithFile = async (cb: (fileName: string) => Promise<void>) => {
-    try {
-      const formData = new FormData();
-      formData.append("file", userImg as RcFile);
-
-      const { data } = await axiosClient.post(`/api/file/`, formData, {
-        headers: {
-          "Content-type": "multipart/form-data",
-        },
-      });
-      cb && data.filename && (await cb(data.filename));
-    } catch (error) {
-      (error as Error).message && message.error((error as Error).message);
-    }
-  };
-
-  const onPreview = async (file: UploadFile) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as RcFile);
-        reader.onload = () => resolve((reader.result as string) || "");
-      });
-    }
-    if (src) {
-      const image = new Image();
-      image.src = src;
-      const imgWindow = window.open(src);
-      (imgWindow as Window).document.write(image.outerHTML);
-    }
-  };
-
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e;
     }
     return e && e.fileList;
   };
+
+  const changeFile: UploadProps["onChange"] = ({ fileList }) =>
+    fileList && fileList[0] && setUserImg(fileList[0].originFileObj);
 
   const createTransaction = async (values: ITransactionShort) => {
     const { employee_id, project_name, transaction_value, currency } = values;
@@ -109,12 +62,11 @@ const CongratulationFormBlock = () => {
       transaction_value,
       currency,
     });
-    console.log(new_transaction.data);
     if (new_transaction.status === 200 && socket) {
       socket.emit("new_message", {
         ...new_transaction.data,
       });
-      navigate("/");
+      navigate("/congratulation");
     }
   };
 
@@ -126,7 +78,7 @@ const CongratulationFormBlock = () => {
               ...values,
               employee_id: employeeSelected.key,
             })
-          : await sendDataWithFile(async (userImgName) => {
+          : await sendDataWithFile(userImg as RcFile, async (userImgName) => {
               const new_employee = await axiosClient.post(`/api/employee/`, {
                 employee_name: values.employee_name,
                 employee_photo: userImgName,
@@ -151,11 +103,10 @@ const CongratulationFormBlock = () => {
   };
 
   useEffect(() => {
-    const { currency }: IFilterSettings = getFilterSettings();
     form.setFieldsValue({
-      currency: currency
+      currency: settings?.currency,
     });
-  }, []);
+  }, [settings]);
 
   if (!!Object.keys(error).length && socket && !socket.connected)
     return (
@@ -224,7 +175,7 @@ const CongratulationFormBlock = () => {
             type="number"
             addonAfter={
               <Form.Item name="currency" noStyle>
-                {CurrencyTypeSelect}
+                <CurrencyTypeSelect />
               </Form.Item>
             }
           />
@@ -242,17 +193,7 @@ const CongratulationFormBlock = () => {
               },
             ]}
           >
-            <Upload
-              beforeUpload={() => false}
-              listType="picture-card"
-              maxCount={1}
-              ref={uploadInputRef}
-              onPreview={onPreview}
-              accept=".jpg, .jpeg, .png"
-              onChange={changeFile}
-            >
-              Выбрать фото
-            </Upload>
+            <UploadPhoto onChange={changeFile} />
           </Form.Item>
         )}
         <Form.Item>

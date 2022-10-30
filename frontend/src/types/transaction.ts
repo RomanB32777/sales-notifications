@@ -17,10 +17,21 @@ export interface ITransactionFull extends ITransaction, IEmployeeShort {}
 
 export interface ITransactionTopList extends IEmployeeShort {
   id: number;
-  sum_transactions: string
+  sum_transactions: number;
+}
+
+export interface ITopList {
+  top_level: ITransactionTopList[];
+  middle_level: ITransactionTopList[];
+  low_level: ITransactionTopList[]; // ITransactionTopList
+}
+
+export interface ITransactionsState {
+  transactions_full: ITransactionFull[];
+  transactions_top: ITopList;
 }
 
 export interface ITransactionsAction {
   type: string;
-  payload: ITransactionFull[] | ITransactionTopList[];
+  payload: ITransactionFull[] | ITopList;
 }
