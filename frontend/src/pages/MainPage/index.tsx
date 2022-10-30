@@ -5,7 +5,7 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { getTransactionsTop } from "../../redux/types/Transactions";
 import { formatNumber } from "../../utils";
-import { ISettings, ITopList } from "../../types";
+import { ITopList } from "../../types";
 
 // import testImg from "../../assets/images/Dubai.jpg";
 
@@ -49,12 +49,42 @@ const MainPage = () => {
     );
 
   const getLevelDescription = useCallback((): {
-    [key in keyof ITopList]: string;
+    [key in keyof ITopList]: React.ReactNode;
   } => {
     return {
-      top_level: `level top - sum >= ${settings?.top_level}`,
-      middle_level: `level middle - sum >= ${settings?.middle_level} and sum < ${settings?.top_level}`,
-      low_level: `level low - sum < ${settings?.middle_level}`,
+      top_level: (
+        <>
+          <h3>CHAMPIONS <span className="emoji">🏆</span></h3>
+          <p>
+            Commissions {">= "}
+            {settings && formatNumber(settings.top_level, settings.currency)}
+          </p>
+        </>
+      ),
+      middle_level: (
+        <>
+          <h3>PROFESSIONALS <span className="emoji">💪🏼</span></h3>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: settings
+                ? `Commissions ${settings.middle_level} &mdash; ${formatNumber(
+                    settings.top_level,
+                    settings.currency
+                  )}`
+                : "",
+            }}
+          ></p>
+        </>
+      ),
+      low_level: (
+        <>
+          <h3>LOW LEVEL <span className="emoji">👎🏼</span></h3>
+          <p>
+            Commissions {"< "}
+            {settings && formatNumber(settings.middle_level, settings.currency)}
+          </p>
+        </>
+      ),
     };
   }, [settings]);
 
@@ -77,12 +107,12 @@ const MainPage = () => {
               const keyOfTopList = key as keyof ITopList;
               return (
                 <Row key={key}>
-                  <Col span={4}>
+                  <Col span={5}>
                     <div className="level-description">
-                      <p>{getLevelDescription()[keyOfTopList]}</p>
+                      <div>{getLevelDescription()[keyOfTopList]}</div>
                     </div>
                   </Col>
-                  <Col span={20}>
+                  <Col span={19}>
                     <Row
                       justify="center"
                       key={key}

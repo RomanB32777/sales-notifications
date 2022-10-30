@@ -71,28 +71,26 @@ const CongratulationFormBlock = () => {
   };
 
   const onFinish = async (values: IFormData) => {
-    if (socket) {
-      try {
-        employeeSelected
-          ? await createTransaction({
-              ...values,
-              employee_id: employeeSelected.key,
-            })
-          : await sendDataWithFile(userImg as RcFile, async (userImgName) => {
-              const new_employee = await axiosClient.post(`/api/employee/`, {
-                employee_name: values.employee_name,
-                employee_photo: userImgName,
-              });
-              if (new_employee.status === 200) {
-                await createTransaction({
-                  ...values,
-                  employee_id: new_employee.data.id,
-                });
-              }
+    try {
+      employeeSelected
+        ? await createTransaction({
+            ...values,
+            employee_id: employeeSelected.key,
+          })
+        : await sendDataWithFile(userImg as RcFile, async (userImgName) => {
+            const new_employee = await axiosClient.post(`/api/employee/`, {
+              employee_name: values.employee_name,
+              employee_photo: userImgName,
             });
-      } catch (error) {
-        message.error("Произошла ошибка");
-      }
+            if (new_employee.status === 200) {
+              await createTransaction({
+                ...values,
+                employee_id: new_employee.data.id,
+              });
+            }
+          });
+    } catch (error) {
+      message.error("Произошла ошибка");
     }
   };
 

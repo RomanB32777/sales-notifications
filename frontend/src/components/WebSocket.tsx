@@ -6,7 +6,8 @@ import { login } from "../redux/types/User";
 import { setLoading } from "../redux/types/Loading";
 import { clearError, setError } from "../redux/types/Error";
 import { setMessage } from "../redux/types/Message";
-import { IMessage } from "../types";
+import { IMessage, ISettings } from "../types";
+import { getTransactionsTop } from "../redux/types/Transactions";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -53,6 +54,9 @@ export const WebSocketProvider = ({
       dispatch(setMessage({ ...data, active: true, isNewMessage: true }));
     });
 
+    socket.on("update_transactions_top", (data: ISettings) => {
+      dispatch(getTransactionsTop(data));
+    });
     setValueContext(socket);
 
     return () => {

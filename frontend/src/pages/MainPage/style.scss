@@ -42,9 +42,23 @@
   border-right: 1px solid #fff; //var(--main-text-color);
   border-bottom: 1px solid #fff; //var(--main-text-color);
 
-  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  font-family: var(--main-font-family);
+
+  h3,
+  p {
+    color: #fff;
+  }
+
+  h3 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1.5rem;
+  }
 }

@@ -1,7 +1,8 @@
 import { Button, Form, InputNumber, message, Select, Skeleton } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import LayoutBlock from "../../../components/LayoutBlock";
 import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
+import { WebSocketContext } from "../../../components/WebSocket";
 
 import axiosClient from "../../../axiosClient";
 import { IPeriodItemsTypes } from "../../../utils/dateMethods/types";
@@ -16,6 +17,8 @@ const { Option } = Select;
 const SettingsBlock = () => {
   const dispatch = useAppDispatch();
   const { settings, loading } = useAppSelector((state) => state);
+  const socket = useContext(WebSocketContext);
+
   const [currencySelect, setCurrencySelect] = useState<string>();
 
   const [form] = Form.useForm<ISettings>();
@@ -25,8 +28,11 @@ const SettingsBlock = () => {
       const new_settings = await axiosClient.put(`/api/settings/`, {
         ...values,
       });
-      if (new_settings.status === 200) {
+      if (new_settings.status === 200 && socket) {
         dispatch(setSettings(new_settings.data));
+        socket.emit("update_settings", {
+          ...new_settings.data,
+        });
         message.success("Изменения сохранены");
       } else message.error("Произошла ошибка");
     } catch (error) {
