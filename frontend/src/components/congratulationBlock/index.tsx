@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Drawer, Row, Col } from "antd";
 import useSound from "use-sound";
 
@@ -13,7 +12,6 @@ import sound from "../../assets/sounds/fanfary.mp3";
 import "./style.scss";
 
 const CongratulationBlock = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { message, settings } = useAppSelector((state) => state);
   const [play, { stop, duration }] = useSound(sound);
@@ -31,7 +29,6 @@ const CongratulationBlock = () => {
 
   const drawerClose = () => {
     onClose();
-    navigate("/");
   };
 
   const playMusic = useCallback(() => {
@@ -41,7 +38,6 @@ const CongratulationBlock = () => {
         setTimeoutClose(
           setTimeout(() => {
             onClose();
-            navigate("/", { replace: true });
           }, duration)
         );
       }
