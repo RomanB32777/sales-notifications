@@ -60,7 +60,7 @@ const TransactionsBlock = () => {
           },
         ]}
         pagination={{
-          total: transactions_full.length,
+          total: tableData.length,
           pageSize: 10,
           position: ["bottomRight"],
           hideOnSinglePage: true,

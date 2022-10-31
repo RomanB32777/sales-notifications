@@ -36,11 +36,11 @@ const CongratulationFormBlock = () => {
   const { employees, settings, error, loading } = useAppSelector(
     (state) => state
   );
+  const navigate = useNavigate()
   const socket = useContext(WebSocketContext);
   const [userImg, setUserImg] = useState<RcFile>();
   const [employeeSelected, setEmployeeSelected] =
     useState<IAutoCompleteOption | null>(null);
-  const navigate = useNavigate();
 
   const [form] = Form.useForm<IFormData>();
 
@@ -66,7 +66,7 @@ const CongratulationFormBlock = () => {
       socket.emit("new_message", {
         ...new_transaction.data,
       });
-      navigate("/congratulation");
+      navigate("/");
     }
   };
 

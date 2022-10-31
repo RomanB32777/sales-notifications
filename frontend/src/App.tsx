@@ -6,7 +6,6 @@ import { Layout } from "antd";
 import { WebSocketProvider } from "./components/WebSocket";
 import AdminPage from "./pages/AdminPage";
 import MainPage from "./pages/MainPage";
-import CongratulationPage from "./pages/CongratulationPage";
 import HeaderBlock from "./components/HeaderBlock";
 import store from "./redux";
 import { useAppDispatch } from "./redux/hooks";
@@ -20,7 +19,6 @@ const { Content } = Layout;
 
 export const routers = [
   { path: "/", name: "Главная", element: <MainPage /> },
-  { path: "/congratulation", name: "Поздравление", element: <CongratulationPage /> },
   { path: "/admin", name: "Админ", element: <AdminPage /> },
 ];
 
