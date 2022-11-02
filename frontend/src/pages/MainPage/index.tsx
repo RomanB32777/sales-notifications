@@ -14,7 +14,7 @@ import "./style.scss";
 
 const MainPage = () => {
   const dispatch = useAppDispatch();
-  const { transactions, message, settings } = useAppSelector((state) => state);
+  const { transactions, settings } = useAppSelector((state) => state);
   const { transactions_top } = transactions;
 
   const getLevelEmployees = (level: keyof ITopList) =>
@@ -37,7 +37,6 @@ const MainPage = () => {
                   src={`/images/${employee_photo}`} // testImg
                 />
               }
-              // style={{ width: 260 }}
               bordered={false}
             >
               <h3 className="employee-text employee-name">
@@ -59,7 +58,7 @@ const MainPage = () => {
             CHAMPIONS <span className="emoji">🏆</span>
           </h3>
           <p>
-            Commissions {">= "}
+            Total price of project ≥
             {settings && formatNumber(settings.top_level, settings.currency)}
           </p>
         </>
@@ -72,7 +71,7 @@ const MainPage = () => {
           <p
             dangerouslySetInnerHTML={{
               __html: settings
-                ? `Commissions ${settings.middle_level} &mdash; ${formatNumber(
+                ? `Total price of project ${settings.middle_level} &mdash; ${formatNumber(
                     settings.top_level,
                     settings.currency
                   )}`
@@ -87,7 +86,7 @@ const MainPage = () => {
             LOW LEVEL <span className="emoji">👎🏼</span>
           </h3>
           <p>
-            Commissions {"< "}
+            Total price of project {"< "}
             {settings && formatNumber(settings.middle_level, settings.currency)}
           </p>
         </>

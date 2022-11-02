@@ -10,6 +10,10 @@
     background: transparent;
     max-width: 260px;
 
+    .ant-card-head {
+      padding: 0;
+    }
+
     .employee-text {
       text-align: center;
       margin: 0;
