@@ -12,6 +12,7 @@
 *.vi
 *.zip
 *.dump
+dump.sql
 *~
 
 # OS or Editor folders
@@ -33,6 +34,7 @@ Thumbs.db
 .idea
 .svn
 bower_components
+uploads
 
 # Node.JS
 node_modules
