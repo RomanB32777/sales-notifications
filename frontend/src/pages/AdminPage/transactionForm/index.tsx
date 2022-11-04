@@ -17,6 +17,7 @@ import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
 
 import axiosClient from "../../../axiosClient";
 import { getTransactions } from "../../../redux/types/Transactions";
+import { getEmployees } from "../../../redux/types/Employees";
 import { IEmployeeFull, ITransactionShort } from "../../../types";
 
 export interface IFormTransactionData extends ITransactionShort {
@@ -29,7 +30,7 @@ const CongratulationFormBlock = ({
   transaction?: IFormTransactionData | null;
 }) => {
   const dispatch = useAppDispatch();
-  const { employees, settings, error, loading } = useAppSelector(
+  const { employees, settings, error } = useAppSelector(
     (state) => state
   );
   const socket = useContext(WebSocketContext);
@@ -54,6 +55,7 @@ const CongratulationFormBlock = ({
       );
       if (new_transaction.status === 200 && socket) {
         dispatch(getTransactions());
+        dispatch(getEmployees());
         socket.emit("new_message", {
           ...new_transaction.data,
         });
@@ -102,9 +104,9 @@ const CongratulationFormBlock = ({
       />
     );
 
-  if (!socket || loading) {
-    return <Skeleton active />;
-  }
+  // if (!socket || loading) {
+  //   return <Skeleton active />;
+  // }
 
   return (
     <Form form={form} name="create-message" onFinish={onFinish}>
