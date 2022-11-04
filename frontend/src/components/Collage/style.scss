@@ -1,0 +1,44 @@
+.collage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #cccccc;
+
+  img {
+    object-fit: cover;
+  }
+
+  &.layout-1 {
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &.layout-2 {
+    img {
+      width: 50%;
+      height: 100%;
+    }
+  }
+
+  &.layout-3 {
+    img {
+      width: 50%;
+      height: 50%;
+
+      &:first-child {
+        width: 100%;
+        height: 50%;
+      }
+    }
+  }
+
+  &.layout-4 {
+    img {
+      width: 50%;
+      height: 50%;
+    }
+  }
+}

@@ -9,7 +9,7 @@ import {
   ITransactionsState,
   ITransactionsAction,
 } from "./transaction";
-import { IEmployee, IEmployeeShort, IEmployeeAction } from "./employee";
+import { IEmployeeShort, IEmployee, IEmployeeFull, IEmployeeAction } from "./employee";
 import { ICurrenciesTypes, ISettings } from "./settings";
 
 type ICurrencies = {
@@ -43,8 +43,9 @@ export type {
   ITopList,
   ITransactionsState,
   ITransactionsAction,
-  IEmployee,
   IEmployeeShort,
+  IEmployee,
+  IEmployeeFull,
   IEmployeeAction,
   ILoadingAction,
   IMessage,

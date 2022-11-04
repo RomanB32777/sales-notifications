@@ -7,16 +7,17 @@ import {
 } from "../../../utils";
 
 interface ITableData extends ITransaction {
-  employee_name: string;
+  employees: string[];
 }
 
 export const tableColumns: ColumnsType<ITransaction> = [
   {
-    title: "Брокер",
-    dataIndex: "employee_name",
-    key: "employee_name",
+    title: "Брокер/-ы",
+    dataIndex: "employees",
+    key: "employees",
     width: "15%",
     align: "center",
+    render: (value: string[]) => value.join("/"), // value.map((e: string) => e.split(" ")[0]).join("/")
   },
   {
     title: "Сумма сделки",

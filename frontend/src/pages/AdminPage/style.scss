@@ -1,0 +1,13 @@
+.dynamic-button {
+  position: relative;
+  top: 4px;
+  margin: 0 8px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dynamic-delete-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -5,10 +5,14 @@ export interface IEmployeeShort {
 
 export interface IEmployee extends IEmployeeShort {
   id: number;
-  created_at: string;
+  created_at?: string;
+}
+
+export interface IEmployeeFull extends IEmployee {
+  employees?: IEmployee[]; // CooperativeEmployee
 }
 
 export interface IEmployeeAction {
   type: string;
-  payload: IEmployee[];
+  payload: IEmployeeFull[];
 }

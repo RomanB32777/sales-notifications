@@ -12,13 +12,19 @@ import LayoutBlock from "../../../components/LayoutBlock";
 import ModalComponent from "../../../components/ModalComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import UploadPhoto from "../../../components/UploadPhoto";
+import Collage from "../../../components/Collage";
 import { sendDataWithFile } from "../../../utils";
-import { IEmployeeShort } from "../../../types";
+import { IEmployeeFull, IEmployeeShort } from "../../../types";
+
 import "./style.scss";
+
+const { Search } = Input;
 
 const EmployeesBlock = () => {
   const dispatch = useAppDispatch();
   const { employees, loading } = useAppSelector((state) => state);
+
+  const [filterEmployees, setFilterEmployees] = useState<IEmployeeFull[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [editedEmployee, setEditedEmployee] = useState<number | null>(null);
   const [userImg, setUserImg] = useState<RcFile>();
@@ -57,7 +63,7 @@ const EmployeesBlock = () => {
           ? "Информация о сотруднике изменена"
           : "Новый сотрудник добавлен"
       );
-      dispatch(getEmployees());
+      updateLists();
       closeModal();
       form.resetFields();
     } else message.error("Произошла ошибка");
@@ -74,12 +80,24 @@ const EmployeesBlock = () => {
       : await sendFormEmployee({ employee_name, id });
   };
 
+  const updateLists = () => {
+    dispatch(getEmployees());
+    dispatch(getTransactions());
+  };
+
   const deleteEmployee = async (id: number) => {
     const deleted_transaction = await axiosClient.delete(`/api/employee/${id}`);
-    if (deleted_transaction.status === 200) {
-      dispatch(getEmployees());
-      dispatch(getTransactions());
-    }
+    deleted_transaction.status === 200 && updateLists();
+  };
+
+  const deleteCooperativeEmployees = async (ids: number[]) => {
+    const deleted_cooperative = await axiosClient.post(
+      "/api/employee/delete/cooperative/",
+      {
+        ids,
+      }
+    );
+    deleted_cooperative.status === 200 && updateLists();
   };
 
   const openModal = () => setIsOpenModal(true);
@@ -110,18 +128,41 @@ const EmployeesBlock = () => {
     form.resetFields();
   };
 
+  const onSearch = (name: string) => {
+    const searchEmployees = employees.filter(({ employee_name, employees }) =>
+      employee_name
+        ? employee_name.includes(name)
+        : employees?.some(({ employee_name }) => employee_name.includes(name))
+    );
+    setFilterEmployees(searchEmployees);
+  };
+
   useEffect(() => {
     dispatch(getEmployees());
   }, []);
+
+  useEffect(() => {
+    setFilterEmployees(employees);
+  }, [employees]);
 
   return (
     <>
       <LayoutBlock
         title={"Сотрудники"}
-        button={
-          <Button type="primary" onClick={openModal}>
-            +
-          </Button>
+        headerElements={
+          <>
+            <Search
+              placeholder="Найти сотрудника/-ов"
+              className="search-employees"
+              onSearch={onSearch}
+              style={{ width: 250 }}
+              allowClear
+              enterButton
+            />
+            <Button type="primary" onClick={openModal}>
+              +
+            </Button>
+          </>
         }
       >
         <List
@@ -129,35 +170,69 @@ const EmployeesBlock = () => {
           loading={loading}
           itemLayout="horizontal"
           grid={{ gutter: 64, column: 3 }}
-          dataSource={employees}
+          dataSource={filterEmployees}
           pagination={{
-            total: employees.length,
+            total: filterEmployees.length,
             pageSize: 6,
             hideOnSinglePage: true,
           }}
           renderItem={(employee) => {
-            const { id, employee_photo, employee_name } = employee;
+            const { id, employee_photo, employee_name, employees } = employee;
+            const btnActions = [
+              <ConfirmPopup
+                confirm={() =>
+                  employees
+                    ? deleteCooperativeEmployees(employees.map((e) => e.id))
+                    : deleteEmployee(id)
+                }
+                title={
+                  employees ? "Удалить объединение?" : "Удалить сотрудника?"
+                }
+              >
+                <UserDeleteOutlined style={{ color: "red", fontSize: 20 }} />
+              </ConfirmPopup>,
+            ];
             return (
               <List.Item
                 style={{ display: "flex" }}
-                actions={[
-                  <EditOutlined
-                    onClick={() => openEditModal(employee, id)}
-                    style={{ cursor: "pointer", fontSize: 20 }}
-                  />,
-                  <ConfirmPopup
-                    confirm={() => deleteEmployee(id)}
-                    title="Удалить сотрудника?"
-                  >
-                    <UserDeleteOutlined
-                      style={{ color: "red", fontSize: 20 }}
-                    />
-                  </ConfirmPopup>,
-                ]}
+                actions={
+                  employees
+                    ? btnActions
+                    : [
+                        <EditOutlined
+                          onClick={() => openEditModal(employee, id)}
+                          style={{ cursor: "pointer", fontSize: 20 }}
+                        />,
+                        ...btnActions,
+                      ]
+                }
               >
                 <List.Item.Meta
-                  avatar={<Avatar size={100} src={`/images/${employee_photo}`} />}
-                  title={employee_name}
+                  avatar={
+                    <Avatar
+                      size={100}
+                      src={
+                        employees ? (
+                          <Collage
+                            images={employees.map(
+                              ({ employee_name, employee_photo, id }) => ({
+                                src: employee_photo,
+                                alt: employee_name,
+                                key: id,
+                              })
+                            )}
+                          />
+                        ) : (
+                          `/images/${employee_photo}`
+                        )
+                      }
+                    />
+                  }
+                  title={
+                    employees
+                      ? employees.map((e) => e.employee_name).join("/")
+                      : employee_name
+                  }
                 />
               </List.Item>
             );

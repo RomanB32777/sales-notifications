@@ -1,11 +1,11 @@
 import { ICurrenciesTypes } from ".";
-import { IEmployeeShort } from "./employee";
+import { IEmployee, IEmployeeShort } from "./employee";
 
 export interface ITransactionShort {
   project_name: string;
   transaction_value: number;
   currency: ICurrenciesTypes;
-  employee_id: number;
+  // employee_id: number;
 }
 
 export interface ITransaction extends ITransactionShort {
@@ -15,15 +15,16 @@ export interface ITransaction extends ITransactionShort {
 
 export interface ITransactionFull extends ITransaction, IEmployeeShort {}
 
-export interface ITransactionTopList extends IEmployeeShort {
-  id: number;
-  sum_transactions: number;
+export interface ITransactionTopList {
+  employees: IEmployee[];
+  sum_transactions?: number;
 }
 
 export interface ITopList {
   top_level: ITransactionTopList[];
   middle_level: ITransactionTopList[];
-  low_level: ITransactionTopList[]; // ITransactionTopList
+  low_level: ITransactionTopList[];
+  zero_level: ITransactionTopList[];
 }
 
 export interface ITransactionsState {

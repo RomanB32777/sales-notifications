@@ -33,13 +33,42 @@ class EmployeeController {
     }
   }
 
+  async deleteCooperativeEmployee(req, res) {
+    try {
+      const { ids } = req.body;
+      const deletedCooperatives = await db.query(`
+          DELETE FROM transactions WHERE id in (
+            SELECT transaction_id FROM employees_transactions 
+            WHERE employee_id in (${ids.join(',')})
+            GROUP BY transaction_id
+            HAVING COUNT(employee_id) >= ${ids.length}
+          ) RETURNING *;
+      `);
+      res.status(200).json(deletedCooperatives.rows);
+    } catch (error) {
+      res
+        .status(error.status || 500)
+        .json({ error: true, message: error.message || "Something broke!" });
+    }
+  }
+
   async getEmployees(req, res) {
     try {
+      const cooperativeEmployees = await db.query(
+        `SELECT DISTINCT jsonb_agg(e.*) AS employees 
+          FROM employees_transactions et
+          LEFT JOIN employees e ON e.id = et.employee_id
+          GROUP BY et.transaction_id
+          HAVING COUNT (employee_id) > 1`
+      );
+
       const employeesQuery = await db.query(
         "SELECT * FROM employees ORDER BY created_at DESC"
       );
 
-      res.status(200).json(employeesQuery.rows); // employees
+      res
+        .status(200)
+        .json([...cooperativeEmployees.rows, ...employeesQuery.rows]);
     } catch (error) {
       res
         .status(error.status || 500)
@@ -50,10 +79,10 @@ class EmployeeController {
   async getEmployee(req, res) {
     try {
       const { id } = req.params;
-      const city = await db.query("SELECT * FROM employees WHERE id = $1", [
+      const employee = await db.query("SELECT * FROM employees WHERE id = $1", [
         id,
       ]);
-      res.status(200).json(city.rows[0]);
+      res.status(200).json(employee.rows[0]);
     } catch (error) {
       res
         .status(error.status || 500)
@@ -70,7 +99,7 @@ class EmployeeController {
         [employee_name, employee_photo, id]
       );
 
-      res.status(200).json();
+      res.status(200).json(editedEmployee);
     } catch (error) {
       res
         .status(error.status || 500)

@@ -10,6 +10,7 @@ import TableComponent from "../../../components/TableComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import { ITransaction } from "../../../types";
 import { tableColumns } from "./tableData";
+import { getEmployees } from "../../../redux/types/Employees";
 
 const TransactionsBlock = () => {
   const dispatch = useAppDispatch();
@@ -19,11 +20,16 @@ const TransactionsBlock = () => {
 
   const { transactions_full } = transactions;
 
+  const updateLists = () => {
+    dispatch(getEmployees());
+    dispatch(getTransactions());
+  };
+
   const deleteTransaction = async (id: number) => {
     const deleted_transaction = await axiosClient.delete(
       `/api/transaction/${id}`
     );
-    deleted_transaction.status === 200 && dispatch(getTransactions());
+    deleted_transaction.status === 200 && updateLists();
   };
 
   useEffect(() => {

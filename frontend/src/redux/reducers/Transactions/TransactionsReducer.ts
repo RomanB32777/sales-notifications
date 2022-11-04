@@ -14,7 +14,8 @@ const initialState: ITransactionsState = {
   transactions_top: {
     top_level: [],
     middle_level: [],
-    low_level: []
+    low_level: [],
+    zero_level: []
   },
 };
 

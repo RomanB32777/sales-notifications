@@ -1,9 +1,10 @@
-import { ITransactionFull } from './transaction';
-import { IEmployeeShort } from './employee';
+import { IEmployee } from "./employee";
+import { ITransaction } from "./transaction";
 
-export interface IMessage extends ITransactionFull, IEmployeeShort {
+export interface IMessage extends ITransaction {
+  employees: IEmployee[];
   active: boolean;
-  isNewMessage?: boolean
+  isNewMessage?: boolean;
 }
 
 export interface IMessageAction {

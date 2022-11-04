@@ -3,11 +3,11 @@ import "./style.scss";
 
 const LayoutBlock = ({
   title,
-  button,
+  headerElements,
   children,
 }: {
   title?: string;
-  button?: React.ReactNode;
+  headerElements?: React.ReactNode;
   children: React.ReactNode;
 }) => {
   return (
@@ -15,7 +15,7 @@ const LayoutBlock = ({
       <div className="block-header">
         <Row justify="space-between">
           <Col>{title && <h2 className="title">{title}</h2>}</Col>
-          <Col>{button}</Col>
+          <Col>{headerElements}</Col>
         </Row>
       </div>
       {children}

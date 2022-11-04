@@ -1,7 +1,7 @@
-import { IEmployee, IEmployeeAction } from "../../../types";
+import { IEmployeeFull, IEmployeeAction } from "../../../types";
 import { SET_EMPLOYEES } from "../../types/Employees";
 
-const initialState: IEmployee[] = [];
+const initialState: IEmployeeFull[] = [];
 
 const EmployeesReducer = (
   state = initialState,

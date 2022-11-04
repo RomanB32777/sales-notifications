@@ -5,9 +5,7 @@ import { init_filter_settings } from "../../../consts";
 const initialState: IMessage = {
   active: false,
   id: 0,
-  employee_name: "",
-  employee_id: 0,
-  employee_photo: "",
+  employees: [],
   transaction_value: 0,
   currency: init_filter_settings.currency,
   created_at: "",
