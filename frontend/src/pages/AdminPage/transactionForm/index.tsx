@@ -11,11 +11,12 @@ import {
 } from "antd";
 import { UserDeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { WebSocketContext } from "../../../components/WebSocket";
 import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
 
 import axiosClient from "../../../axiosClient";
+import { getTransactions } from "../../../redux/types/Transactions";
 import { IEmployeeFull, ITransactionShort } from "../../../types";
 
 export interface IFormTransactionData extends ITransactionShort {
@@ -27,6 +28,7 @@ const CongratulationFormBlock = ({
 }: {
   transaction?: IFormTransactionData | null;
 }) => {
+  const dispatch = useAppDispatch();
   const { employees, settings, error, loading } = useAppSelector(
     (state) => state
   );
@@ -51,11 +53,14 @@ const CongratulationFormBlock = ({
         }
       );
       if (new_transaction.status === 200 && socket) {
-        // isEdit &&
+        dispatch(getTransactions());
         socket.emit("new_message", {
           ...new_transaction.data,
         });
         form.resetFields();
+        form.setFieldsValue({
+          currency: settings?.currency,
+        });
       }
     } catch (error) {
       message.error("Произошла ошибка");

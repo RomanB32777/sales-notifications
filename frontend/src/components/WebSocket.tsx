@@ -8,6 +8,7 @@ import { clearError, setError } from "../redux/types/Error";
 import { setMessage } from "../redux/types/Message";
 import { IMessage, ISettings } from "../types";
 import { getTransactionsTop } from "../redux/types/Transactions";
+import { getSettings } from "../redux/types/Settings";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -56,6 +57,7 @@ export const WebSocketProvider = ({
 
     socket.on("update_transactions_top", (data: ISettings) => {
       dispatch(getTransactionsTop(data));
+      dispatch(getSettings());
     });
     setValueContext(socket);
 

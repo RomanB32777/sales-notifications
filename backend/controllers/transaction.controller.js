@@ -144,7 +144,7 @@ class TransactionController {
             LEFT JOIN employees_transactions et ON ce.transaction = et.transaction_id
             GROUP BY et.employee_id
           )
-        SELECT jsonb_agg(DISTINCT e.*) as employees, SUM(DISTINCT sc.sum_transactions)::integer + SUM(t.transaction_value ${transferToSelectedCurrency})::integer AS sum_transactions
+        SELECT jsonb_agg(DISTINCT e.*) as employees, COALESCE(SUM(DISTINCT sc.sum_transactions)::integer, 0) + SUM(t.transaction_value ${transferToSelectedCurrency})::integer AS sum_transactions
         FROM
         (
           SELECT et.transaction_id, t.transaction_value, t.currency
