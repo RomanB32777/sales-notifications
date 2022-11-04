@@ -69,7 +69,7 @@ const CongratulationBlock = () => {
               <Collage
                 images={employees.map(
                   ({ employee_name, employee_photo, id }) => ({
-                    src: employee_photo, 
+                    src: `/images/${employee_photo}`, 
                     alt: employee_name,
                     key: id,
                   })

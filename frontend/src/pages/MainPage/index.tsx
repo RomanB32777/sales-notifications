@@ -81,7 +81,7 @@ const MainPage = () => {
 
       const cooperativeEmployeesImages: ICollageImage[] = employees.map(
         ({ employee_photo, employee_name, id }) => ({
-          src: employee_photo, // testImg
+          src: `/images/${employee_photo}`, // testImg
           alt: employee_name,
           key: id,
         })
@@ -165,39 +165,37 @@ const MainPage = () => {
   return (
     <div className="page">
       <div className="main-page">
-        {transactions_top && (
-          <Flipper
-            flipKey={Object.keys(transactions_top).map((key) =>
-              transactions_top[key as keyof ITopList]
-                .map(({ employees }) => employees.map((e) => e.id))
-                .join("")
-            )}
-          >
-            {Object.keys(transactions_top).map((key) => {
-              const keyOfTopList = key as keyof ITopList;
-              return (
-                <Row key={key}>
-                  <Col span={5}>
-                    <div className="level-description">
-                      <div>{getLevelDescription()[keyOfTopList]}</div>
-                    </div>
-                  </Col>
-                  <Col span={19}>
-                    <div className="level-employees">
-                      <Row
-                        justify="center"
-                        key={key}
-                        gutter={[16, 16]}
-                      >
-                        {getLevelEmployees(key as keyof ITopList)}
-                      </Row>
-                    </div>
-                  </Col>
-                </Row>
-              );
-            })}
-          </Flipper>
-        )}
+        <Flipper
+          flipKey={Object.keys(transactions_top)
+            .map((key) =>
+              transactions_top[key as keyof ITopList].length
+                ? transactions_top[key as keyof ITopList]
+                    .map(({ employees }) => employees.map((e) => e.id))
+                    .join("")
+                : ""
+            )
+            .join("")}
+        >
+          {Object.keys(transactions_top).map((key) => {
+            const keyOfTopList = key as keyof ITopList;
+            return (
+              <Row key={key}>
+                <Col span={5}>
+                  <div className="level-description">
+                    <div>{getLevelDescription()[keyOfTopList]}</div>
+                  </div>
+                </Col>
+                <Col span={19}>
+                  <div className="level-employees">
+                    <Row justify="center" key={key} gutter={[16, 16]}>
+                      {getLevelEmployees(key as keyof ITopList)}
+                    </Row>
+                  </div>
+                </Col>
+              </Row>
+            );
+          })}
+        </Flipper>
       </div>
     </div>
   );

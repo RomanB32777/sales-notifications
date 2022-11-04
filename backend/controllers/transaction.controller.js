@@ -165,7 +165,7 @@ class TransactionController {
         ];
 
         const emptyEmployees = await db.query(`
-          SELECT jsonb_agg(e.*) as employees
+          SELECT jsonb_build_array(e.*) as employees
           FROM employees e
           LEFT JOIN employees_transactions et on e.id = et.employee_id
           WHERE et.employee_id IS NULL;`);
