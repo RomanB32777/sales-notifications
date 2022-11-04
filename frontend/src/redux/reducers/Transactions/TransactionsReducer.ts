@@ -1,5 +1,5 @@
 import {
-  ITransactionFull,
+  ITransactionList,
   ITopList,
   ITransactionsAction,
   ITransactionsState,
@@ -24,7 +24,7 @@ const setTransactionsAction = (
   action: ITransactionsAction
 ): ITransactionsState => ({
   ...state,
-  transactions_full: action.payload as ITransactionFull[],
+  transactions_full: action.payload as ITransactionList[],
 });
 
 const setTransactionsActionTop = (

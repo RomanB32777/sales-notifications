@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, useRoutes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, useRoutes } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Layout } from "antd";
 
@@ -7,6 +7,8 @@ import { WebSocketProvider } from "./components/WebSocket";
 import AdminPage from "./pages/AdminPage";
 import MainPage from "./pages/MainPage";
 import HeaderBlock from "./components/HeaderBlock";
+import CongratulationBlock from "./components/CongratulationBlock";
+
 import store from "./redux";
 import { useAppDispatch } from "./redux/hooks";
 import { getSettings } from "./redux/types/Settings";
@@ -20,6 +22,7 @@ const { Content } = Layout;
 export const routers = [
   { path: "/", name: "Главная", element: <MainPage /> },
   { path: "/admin", name: "Админ", element: <AdminPage /> },
+  { path: "*", element: <Navigate to="/admin" /> },
 ];
 
 const Pages = () => {
@@ -46,6 +49,7 @@ const App = () => {
                   <Pages />
                 </div>
               </Content>
+              <CongratulationBlock />
             </Router>
           </Layout>
         </WebSocketProvider>

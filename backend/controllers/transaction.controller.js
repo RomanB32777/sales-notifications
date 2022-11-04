@@ -8,7 +8,7 @@ const sortBySum = (a, b) => b.sum_transactions - a.sum_transactions;
 class TransactionController {
   async createTransaction(req, res) {
     try {
-      const { project_name, transaction_value, currency, employees_id } =
+      const { project_name, transaction_value, currency, employees } =
         req.body;
 
       const newTransaction = await db.query(
@@ -17,7 +17,7 @@ class TransactionController {
       );
 
       if (newTransaction.rows[0]) {
-        const manyToManyValues = employees_id
+        const manyToManyValues = employees
           .map((employee) => `('${employee}', '${newTransaction.rows[0].id}')`)
           .join(", ");
 
@@ -170,8 +170,6 @@ class TransactionController {
           LEFT JOIN employees_transactions et on e.id = et.employee_id
           WHERE et.employee_id IS NULL;`);
 
-        console.log(totalObj);
-
         const filteredTransactions = totalObj.length
           ? totalObj.reduce((acc, curr) => {
               if (curr.sum_transactions >= top_level)
@@ -201,7 +199,7 @@ class TransactionController {
       }
 
       const transactions = await db.query(`
-        SELECT t.id, t.project_name, t.transaction_value, t.currency, t.created_at, array_agg(e.employee_name) as employees from transactions t
+        SELECT t.id, t.project_name, t.transaction_value, t.currency, t.created_at, jsonb_agg(e.*) as employees from transactions t
         LEFT JOIN employees_transactions et ON et.transaction_id = t.id
         LEFT JOIN employees e ON e.id = et.employee_id
         GROUP BY t.id, t.project_name, t.transaction_value, t.currency, t.created_at

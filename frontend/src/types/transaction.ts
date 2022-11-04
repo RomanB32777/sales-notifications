@@ -20,6 +20,10 @@ export interface ITransactionTopList {
   sum_transactions?: number;
 }
 
+export interface ITransactionList extends ITransaction {
+  employees: IEmployee[];
+}
+
 export interface ITopList {
   top_level: ITransactionTopList[];
   middle_level: ITransactionTopList[];
@@ -28,11 +32,11 @@ export interface ITopList {
 }
 
 export interface ITransactionsState {
-  transactions_full: ITransactionFull[];
+  transactions_full: ITransactionList[];
   transactions_top: ITopList;
 }
 
 export interface ITransactionsAction {
   type: string;
-  payload: ITransactionFull[] | ITopList;
+  payload: ITransactionList[] | ITopList;
 }

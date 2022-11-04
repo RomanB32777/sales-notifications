@@ -1,23 +1,19 @@
 import type { ColumnsType } from "antd/es/table";
-import { ITransaction } from "../../../types";
+import { IEmployee, ITransactionList } from "../../../types";
 import {
   DateFormatter,
   DateTimezoneFormatter,
   formatNumber,
 } from "../../../utils";
 
-interface ITableData extends ITransaction {
-  employees: string[];
-}
-
-export const tableColumns: ColumnsType<ITransaction> = [
+export const tableColumns: ColumnsType<ITransactionList> = [
   {
     title: "Брокер/-ы",
     dataIndex: "employees",
     key: "employees",
     width: "15%",
     align: "center",
-    render: (value: string[]) => value.join("/"), // value.map((e: string) => e.split(" ")[0]).join("/")
+    render: (value: IEmployee[]) => value.map((e) => e.employee_name).join("/"),
   },
   {
     title: "Сумма сделки",
@@ -49,5 +45,3 @@ export const tableColumns: ColumnsType<ITransaction> = [
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
   },
 ];
-
-export type { ITableData };

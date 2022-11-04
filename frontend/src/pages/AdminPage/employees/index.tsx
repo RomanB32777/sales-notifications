@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Avatar, Button, Form, Input, List, message } from "antd";
 import type { RcFile, UploadProps } from "antd/es/upload/interface";
 import { UserDeleteOutlined, EditOutlined } from "@ant-design/icons";
 
+import { WebSocketContext } from "../../../components/WebSocket";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { getEmployees } from "../../../redux/types/Employees";
 import axiosClient from "../../../axiosClient";
@@ -22,7 +23,8 @@ const { Search } = Input;
 
 const EmployeesBlock = () => {
   const dispatch = useAppDispatch();
-  const { employees, loading } = useAppSelector((state) => state);
+  const { employees, loading, settings } = useAppSelector((state) => state);
+  const socket = useContext(WebSocketContext);
 
   const [filterEmployees, setFilterEmployees] = useState<IEmployeeFull[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -57,7 +59,7 @@ const EmployeesBlock = () => {
         ? Object.assign(bodyReq, { employee_photo: userImgName })
         : bodyReq
     );
-    if (axiosRes.status === 200) {
+    if (axiosRes.status === 200 && socket) {
       message.success(
         editedEmployee
           ? "Информация о сотруднике изменена"
@@ -66,6 +68,7 @@ const EmployeesBlock = () => {
       updateLists();
       closeModal();
       form.resetFields();
+      socket.emit("update_table", settings);
     } else message.error("Произошла ошибка");
   };
 
@@ -87,7 +90,10 @@ const EmployeesBlock = () => {
 
   const deleteEmployee = async (id: number) => {
     const deleted_transaction = await axiosClient.delete(`/api/employee/${id}`);
-    deleted_transaction.status === 200 && updateLists();
+    if (deleted_transaction.status === 200 && socket) {
+      updateLists();
+      socket.emit("update_table", settings);
+    }
   };
 
   const deleteCooperativeEmployees = async (ids: number[]) => {
@@ -97,7 +103,10 @@ const EmployeesBlock = () => {
         ids,
       }
     );
-    deleted_cooperative.status === 200 && updateLists();
+    if (deleted_cooperative.status === 200 && socket) {
+      updateLists();
+      socket.emit("update_table", settings);
+    }
   };
 
   const openModal = () => setIsOpenModal(true);

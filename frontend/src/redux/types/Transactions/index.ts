@@ -1,4 +1,4 @@
-import { ISettings, ITransactionFull, ITransactionTopList } from "../../../types";
+import { ISettings, ITransactionList, ITransactionTopList } from "../../../types";
 
 export const GET_TRANSACTIONS = "GET_TRANSACTIONS";
 export const SET_TRANSACTIONS = "SET_TRANSACTIONS";
@@ -15,7 +15,7 @@ export const getTransactionsTop = (payload: ISettings) => ({
   type: GET_TRANSACTIONS_TOP, payload
 });
 
-export const setTransactions = (payload: ITransactionFull[]) => {
+export const setTransactions = (payload: ITransactionList[]) => {
   return { type: SET_TRANSACTIONS, payload };
 };
 

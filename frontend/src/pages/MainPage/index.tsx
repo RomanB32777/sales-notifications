@@ -3,7 +3,6 @@ import { useCallback, useEffect } from "react";
 import { Flipper, Flipped } from "react-flip-toolkit";
 
 import Collage, { ICollageImage } from "../../components/Collage";
-import CongratulationBlock from "../../components/CongratulationBlock";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { getTransactionsTop } from "../../redux/types/Transactions";
 import { formatNumber } from "../../utils";
@@ -184,14 +183,15 @@ const MainPage = () => {
                     </div>
                   </Col>
                   <Col span={19}>
-                    <Row
-                      justify="center"
-                      key={key}
-                      gutter={[16, 16]}
-                      className="level-employees"
-                    >
-                      {getLevelEmployees(key as keyof ITopList)}
-                    </Row>
+                    <div className="level-employees">
+                      <Row
+                        justify="center"
+                        key={key}
+                        gutter={[16, 16]}
+                      >
+                        {getLevelEmployees(key as keyof ITopList)}
+                      </Row>
+                    </div>
                   </Col>
                 </Row>
               );
@@ -199,7 +199,6 @@ const MainPage = () => {
           </Flipper>
         )}
       </div>
-      <CongratulationBlock />
     </div>
   );
 };

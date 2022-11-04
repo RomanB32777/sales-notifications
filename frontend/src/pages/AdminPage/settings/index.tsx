@@ -30,7 +30,7 @@ const SettingsBlock = () => {
       });
       if (new_settings.status === 200 && socket) {
         dispatch(setSettings(new_settings.data));
-        socket.emit("update_settings", {
+        socket.emit("update_table", {
           ...new_settings.data,
         });
         message.success("Изменения сохранены");

@@ -1,6 +1,7 @@
 import { useAppSelector } from "../../redux/hooks";
 
-import CongratulationFormBlock from "./congratulationForm";
+import LayoutBlock from "../../components/LayoutBlock";
+import TransactionFormBlock from "./transactionForm";
 import AuthBlock from "./auth";
 import EmployeesBlock from "./employees";
 import TransactionsBlock from "./transactions";
@@ -16,7 +17,9 @@ const AdminPage = () => {
         <AuthBlock />
       ) : (
         <>
-          <CongratulationFormBlock />
+          <LayoutBlock title={"Создать поздравление"}>
+            <TransactionFormBlock />
+          </LayoutBlock>
           <SettingsBlock />
           <EmployeesBlock />
           <TransactionsBlock />

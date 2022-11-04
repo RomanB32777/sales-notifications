@@ -22,11 +22,13 @@ const HeaderBlock = () => {
   return (
     <Header className="header">
       <div className="header-nav">
-        {routers.map((route) => (
-          <Link key={route.path} to={route.path}>
-            {route.name}
-          </Link>
-        ))}
+        {routers
+          .filter((route) => route.name)
+          .map((route) => (
+            <Link key={route.path} to={route.path}>
+              {route.name}
+            </Link>
+          ))}
       </div>
       {user.isAuth && <Button onClick={logoutClick}>Выйти</Button>}
     </Header>
