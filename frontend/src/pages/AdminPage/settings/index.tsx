@@ -1,8 +1,7 @@
 import { Button, Form, InputNumber, message, Select, Skeleton } from "antd";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LayoutBlock from "../../../components/LayoutBlock";
 import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
-import { WebSocketContext } from "../../../components/WebSocket";
 
 import axiosClient from "../../../axiosClient";
 import { IPeriodItemsTypes } from "../../../utils/dateMethods/types";
@@ -14,10 +13,9 @@ import { setSettings } from "../../../redux/types/Settings";
 
 const { Option } = Select;
 
-const SettingsBlock = () => {
+const SettingsBlock = ({ socket }: { socket: any }) => {
   const dispatch = useAppDispatch();
   const { settings, loading } = useAppSelector((state) => state);
-  const socket = useContext(WebSocketContext);
 
   const [currencySelect, setCurrencySelect] = useState<string>();
 
@@ -28,7 +26,7 @@ const SettingsBlock = () => {
       const new_settings = await axiosClient.put(`/api/settings/`, {
         ...values,
       });
-      if (new_settings.status === 200 && socket) {
+      if (new_settings.status === 200) {
         dispatch(setSettings(new_settings.data));
         socket.emit("update_table", {
           ...new_settings.data,

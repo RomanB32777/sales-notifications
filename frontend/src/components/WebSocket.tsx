@@ -50,7 +50,7 @@ export const WebSocketProvider = ({
     socket.on("disconnect", () => {
       console.log("disconnect");
     });
-
+    
     socket.on("add_mess", (data: IMessage) => {
       dispatch(setMessage({ ...data, active: true, isNewMessage: true }));
     });

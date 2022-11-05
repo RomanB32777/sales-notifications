@@ -1,9 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, Button, Form, Input, List, message } from "antd";
 import type { RcFile, UploadProps } from "antd/es/upload/interface";
 import { UserDeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { WebSocketContext } from "../../../components/WebSocket";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { getEmployees } from "../../../redux/types/Employees";
 import axiosClient from "../../../axiosClient";
@@ -21,10 +20,9 @@ import "./style.scss";
 
 const { Search } = Input;
 
-const EmployeesBlock = () => {
+const EmployeesBlock = ({ socket }: { socket: any }) => {
   const dispatch = useAppDispatch();
   const { employees, loading, settings } = useAppSelector((state) => state);
-  const socket = useContext(WebSocketContext);
 
   const [filterEmployees, setFilterEmployees] = useState<IEmployeeFull[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -59,7 +57,7 @@ const EmployeesBlock = () => {
         ? Object.assign(bodyReq, { employee_photo: userImgName })
         : bodyReq
     );
-    if (axiosRes.status === 200 && socket) {
+    if (axiosRes.status === 200) {
       message.success(
         editedEmployee
           ? "Информация о сотруднике изменена"
@@ -90,7 +88,7 @@ const EmployeesBlock = () => {
 
   const deleteEmployee = async (id: number) => {
     const deleted_transaction = await axiosClient.delete(`/api/employee/${id}`);
-    if (deleted_transaction.status === 200 && socket) {
+    if (deleted_transaction.status === 200) {
       updateLists();
       socket.emit("update_table", settings);
     }
@@ -103,7 +101,7 @@ const EmployeesBlock = () => {
         ids,
       }
     );
-    if (deleted_cooperative.status === 200 && socket) {
+    if (deleted_cooperative.status === 200) {
       updateLists();
       socket.emit("update_table", settings);
     }

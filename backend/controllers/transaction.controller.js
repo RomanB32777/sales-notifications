@@ -1,5 +1,6 @@
 const axios = require("axios");
 const db = require("../db");
+require("dotenv").config();
 const { currencies, initFilteredTopList } = require("../conts");
 const { getTimeCurrentPeriod } = require("../utils");
 
@@ -8,8 +9,7 @@ const sortBySum = (a, b) => b.sum_transactions - a.sum_transactions;
 class TransactionController {
   async createTransaction(req, res) {
     try {
-      const { project_name, transaction_value, currency, employees } =
-        req.body;
+      const { project_name, transaction_value, currency, employees } = req.body;
 
       const newTransaction = await db.query(
         `INSERT INTO transactions (project_name, transaction_value, currency) values ($1, $2, $3) RETURNING id;`,
@@ -88,8 +88,7 @@ class TransactionController {
             )}&base=${currency}`,
             {
               headers: {
-                apikey:
-                  process.env.EXC_API_KEY || "",
+                apikey: process.env.EXC_API_KEY,
               },
             }
           );
@@ -115,18 +114,45 @@ class TransactionController {
           ELSE 1
           END`;
 
-        const cooperativeEmployees = await db.query(`
-          SELECT ce.employees, SUM(ce.sum_transactions)::integer as sum_transactions FROM (
-              SELECT jsonb_agg(DISTINCT e.*) as employees, ROUND(SUM(
-                  distinct t.transaction_value ${transferToSelectedCurrency}
-                )) AS sum_transactions
-              FROM employees_transactions et
-              LEFT JOIN employees e ON e.id = et.employee_id
-              LEFT JOIN transactions t ON t.id = et.transaction_id
-              WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
-              GROUP BY et.transaction_id
-              HAVING COUNT (et.employee_id) > 1) ce 
-          GROUP BY ce.employees;`);
+        const onlyCooperativeTransactionEmployees = await db.query(`
+          WITH sharedCooperatives AS (
+            SELECT et.employee_id as employee, SUM(ce.sum_transactions)::integer as sum_transactions FROM
+            (
+              SELECT et.transaction_id AS transaction, 
+                  array_agg(et.employee_id) AS employees,
+                  (SUM(distinct t.transaction_value ${transferToSelectedCurrency}) / COUNT(et.employee_id))::integer AS sum_transactions
+                FROM employees_transactions et
+                LEFT JOIN transactions t ON t.id = et.transaction_id
+                GROUP BY et.transaction_id
+                HAVING COUNT (et.employee_id) > 1
+            ) ce
+            LEFT JOIN employees_transactions et ON ce.transaction = et.transaction_id
+            GROUP BY et.employee_id
+          )
+          SELECT jsonb_agg(e.*) as employees, sc.sum_transactions FROM (
+            SELECT DISTINCT UNNEST(array_agg(distinct ce.employees)) AS employee
+            FROM (
+                SELECT et.transaction_id AS transaction, array_agg(et.employee_id) AS employees
+                  FROM employees_transactions et
+                  LEFT JOIN transactions t ON t.id = et.transaction_id
+                  WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
+                  GROUP BY et.transaction_id
+                  HAVING COUNT (et.employee_id) > 1
+                ) ce
+              EXCEPT
+                SELECT distinct UNNEST(array_agg(distinct se.employees)) AS employee
+                FROM (
+                  SELECT et.transaction_id, t.transaction_value, array_agg(et.employee_id) AS employees
+                  FROM employees_transactions et
+                  LEFT JOIN transactions t ON t.id = et.transaction_id
+                  WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
+                  GROUP BY et.transaction_id, t.transaction_value
+                  HAVING COUNT (et.employee_id) = 1
+                ) se
+            ) exc_e
+          LEFT JOIN employees e ON exc_e.employee = e.id
+          LEFT JOIN sharedCooperatives sc ON sc.employee = exc_e.employee
+          GROUP BY sc.employee, sc.sum_transactions;`);
 
         const singleEmployeesWithShared = await db.query(`
           WITH sharedCooperatives AS (
@@ -160,7 +186,7 @@ class TransactionController {
         GROUP BY et.employee_id;`);
 
         const totalObj = [
-          ...cooperativeEmployees.rows,
+          ...onlyCooperativeTransactionEmployees.rows,
           ...singleEmployeesWithShared.rows,
         ];
 

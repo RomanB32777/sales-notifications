@@ -1,18 +1,16 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Socket } from "socket.io-client";
 import {
-  Alert,
   Button,
   Form,
   Input,
   InputNumber,
   message,
   Select,
-  Skeleton,
 } from "antd";
 import { UserDeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { WebSocketContext } from "../../../components/WebSocket";
 import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
 
 import axiosClient from "../../../axiosClient";
@@ -25,15 +23,16 @@ export interface IFormTransactionData extends ITransactionShort {
 }
 
 const CongratulationFormBlock = ({
+  socket,
   transaction,
 }: {
+  socket: any
   transaction?: IFormTransactionData | null;
 }) => {
   const dispatch = useAppDispatch();
-  const { employees, settings, error } = useAppSelector(
+  const { employees, settings } = useAppSelector(
     (state) => state
   );
-  const socket = useContext(WebSocketContext);
   const [form] = Form.useForm<IFormTransactionData>();
   const [isSelectedCooperative, setIsSelectedCooperative] =
     useState<boolean>(false);
@@ -53,7 +52,7 @@ const CongratulationFormBlock = ({
           currency,
         }
       );
-      if (new_transaction.status === 200 && socket) {
+      if (new_transaction.status === 200) {
         dispatch(getTransactions());
         dispatch(getEmployees());
         socket.emit("new_message", {
@@ -93,16 +92,6 @@ const CongratulationFormBlock = ({
       currency: settings?.currency,
     });
   }, [settings]);
-
-  if (!!Object.keys(error).length && socket && !socket.connected)
-    return (
-      <Alert
-        message={"error.message"}
-        description={error.description}
-        type="error"
-        style={{ margin: " 24px 0" }}
-      />
-    );
 
   // if (!socket || loading) {
   //   return <Skeleton active />;

@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { getTransactions } from "../../../redux/types/Transactions";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { WebSocketContext } from "../../../components/WebSocket";
 import LayoutBlock from "../../../components/LayoutBlock";
 import TableComponent from "../../../components/TableComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
@@ -20,10 +19,9 @@ import { getEmployees } from "../../../redux/types/Employees";
 
 const { Search } = Input;
 
-const TransactionsBlock = () => {
+const TransactionsBlock =  ({ socket }: { socket: any }) => {
   const dispatch = useAppDispatch();
   const { loading, transactions, settings } = useAppSelector((state) => state);
-  const socket = useContext(WebSocketContext);
 
   const [tableData, setTableData] = useState<ITransactionList[]>([]);
   const [editedTransaction, setEditedTransaction] =
@@ -40,7 +38,7 @@ const TransactionsBlock = () => {
     const deleted_transaction = await axiosClient.delete(
       `/api/transaction/${id}`
     );
-    if (deleted_transaction.status === 200 && socket) {
+    if (deleted_transaction.status === 200) {
       updateLists();
       socket.emit("update_table", settings);
     }
@@ -136,7 +134,7 @@ const TransactionsBlock = () => {
         onCancel={closeModal}
         width={880}
       >
-        <TransactionFormBlock transaction={editedTransaction} />
+        <TransactionFormBlock transaction={editedTransaction} socket={socket} />
       </ModalComponent>
     </>
   );

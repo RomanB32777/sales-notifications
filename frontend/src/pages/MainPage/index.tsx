@@ -136,7 +136,7 @@ const MainPage = () => {
       low_level: (
         <>
           <h3>
-            LOW LEVEL <span className="emoji">👎</span>
+            SPECIALISTS <span className="emoji">🙏</span>
           </h3>
           <p>
             Total price of project {"< "}
