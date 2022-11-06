@@ -24,6 +24,12 @@ export interface ITransactionList extends ITransaction {
   employees: IEmployee[];
 }
 
+export interface ITransactionFilterFields extends ITransactionShort {
+  employees: string;
+}
+
+type ITransactionFilterFieldsKeys = keyof ITransactionFilterFields;
+
 export interface ITopList {
   top_level: ITransactionTopList[];
   middle_level: ITransactionTopList[];
@@ -35,6 +41,8 @@ export interface ITransactionsState {
   transactions_full: ITransactionList[];
   transactions_top: ITopList;
 }
+
+export type { ITransactionFilterFieldsKeys };
 
 export interface ITransactionsAction {
   type: string;

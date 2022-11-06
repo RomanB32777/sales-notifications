@@ -15,8 +15,14 @@ import UploadPhoto from "../../../components/UploadPhoto";
 import Collage from "../../../components/Collage";
 import { sendDataWithFile } from "../../../utils";
 import { IEmployeeFull, IEmployeeShort } from "../../../types";
-
+import { validateMessages } from "../../../consts";
 import "./style.scss";
+
+const layout = {
+  wrapperCol: { span: 21 },
+  labelCol: { span: 3 },
+  labelWrap: true,
+};
 
 const { Search } = Input;
 
@@ -138,8 +144,10 @@ const EmployeesBlock = ({ socket }: { socket: any }) => {
   const onSearch = (name: string) => {
     const searchEmployees = employees.filter(({ employee_name, employees }) =>
       employee_name
-        ? employee_name.includes(name)
-        : employees?.some(({ employee_name }) => employee_name.includes(name))
+        ? employee_name.toUpperCase().includes(name.toUpperCase())
+        : employees?.some(({ employee_name }) =>
+            employee_name.toUpperCase().includes(name.toUpperCase())
+          )
     );
     setFilterEmployees(searchEmployees);
   };
@@ -180,7 +188,7 @@ const EmployeesBlock = ({ socket }: { socket: any }) => {
           dataSource={filterEmployees}
           pagination={{
             total: filterEmployees.length,
-            pageSize: 6,
+            pageSize: 9,
             hideOnSinglePage: true,
           }}
           renderItem={(employee) => {
@@ -252,7 +260,14 @@ const EmployeesBlock = ({ socket }: { socket: any }) => {
         onCancel={closeModal}
         width={880}
       >
-        <Form form={form} name="create-message" onFinish={onFinish}>
+        <Form
+          {...layout}
+          labelAlign="left"
+          form={form}
+          name="create-message"
+          onFinish={onFinish}
+          validateMessages={validateMessages}
+        >
           <Form.Item
             name="employee_name"
             label="Сотрудник"

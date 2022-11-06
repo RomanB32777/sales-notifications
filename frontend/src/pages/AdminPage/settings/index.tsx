@@ -1,25 +1,51 @@
-import { Button, Form, InputNumber, message, Select, Skeleton } from "antd";
+import { Button, Form, InputNumber, message, Select } from "antd";
 import { useEffect, useState } from "react";
 import LayoutBlock from "../../../components/LayoutBlock";
 import CurrencyTypeSelect from "../../../components/CurrencyTypeSelect";
 
 import axiosClient from "../../../axiosClient";
 import { IPeriodItemsTypes } from "../../../utils/dateMethods/types";
-import { currencyTypes } from "../../../consts";
+import { currencyTypes, validateMessages } from "../../../consts";
 import { periodItems } from "../../../utils/dateMethods/consts";
-import { ICurrenciesTypes, ISettings } from "../../../types";
+import { ICurrenciesTypes, ILevels, ISettings } from "../../../types";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setSettings } from "../../../redux/types/Settings";
 
 const { Option } = Select;
+
+const layout = {
+  wrapperCol: { span: 21 },
+  labelCol: { span: 3 },
+  labelWrap: true,
+};
 
 const SettingsBlock = ({ socket }: { socket: any }) => {
   const dispatch = useAppDispatch();
   const { settings, loading } = useAppSelector((state) => state);
 
   const [currencySelect, setCurrencySelect] = useState<string>();
+  const [levelsValues, setLevelsValues] = useState<ILevels>({
+    top_level: 0,
+    middle_level: 0,
+  });
 
   const [form] = Form.useForm<ISettings>();
+
+  const onValuesChange = (changedValues: {
+    [fieldName in keyof ISettings]: any;
+  }) => {
+    changedValues.middle_level &&
+      setLevelsValues({
+        ...levelsValues,
+        middle_level: changedValues.middle_level,
+      });
+
+    changedValues.top_level &&
+      setLevelsValues({
+        ...levelsValues,
+        top_level: changedValues.top_level,
+      });
+  };
 
   const onFinish = async (values: ISettings) => {
     try {
@@ -39,17 +65,29 @@ const SettingsBlock = ({ socket }: { socket: any }) => {
   };
 
   useEffect(() => {
-    settings &&
+    if (settings) {
       form.setFieldsValue({
         ...settings,
       });
+      setLevelsValues({
+        top_level: settings.top_level,
+        middle_level: settings.middle_level,
+      });
+    }
   }, [settings]);
-
-  if (loading) return <Skeleton active />;
 
   return (
     <LayoutBlock title={"Настройки"}>
-      <Form form={form} name="create-message" onFinish={onFinish}>
+      <Form
+        {...layout}
+        labelAlign="left"
+        form={form}
+        name="settings-form"
+        onFinish={onFinish}
+        disabled={loading}
+        validateMessages={validateMessages}
+        onValuesChange={onValuesChange}
+      >
         <Form.Item name="time_period" label="Фильтрация">
           <Select>
             {Object.keys(periodItems).map((key) => (
@@ -76,7 +114,7 @@ const SettingsBlock = ({ socket }: { socket: any }) => {
           rules={[
             {
               type: "number",
-              min: 0,
+              min: levelsValues.middle_level,
             },
           ]}
         >
@@ -98,6 +136,7 @@ const SettingsBlock = ({ socket }: { socket: any }) => {
           rules={[
             {
               type: "number",
+              max: levelsValues.top_level,
               min: 0,
             },
           ]}

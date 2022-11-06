@@ -39,7 +39,7 @@ class EmployeeController {
       const deletedCooperatives = await db.query(`
           DELETE FROM transactions WHERE id in (
             SELECT transaction_id FROM employees_transactions 
-            WHERE employee_id in (${ids.join(',')})
+            WHERE employee_id in (${ids.join(",")})
             GROUP BY transaction_id
             HAVING COUNT(employee_id) >= ${ids.length}
           ) RETURNING *;

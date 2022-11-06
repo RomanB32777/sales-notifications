@@ -132,7 +132,7 @@ class TransactionController {
           SELECT jsonb_agg(e.*) as employees, sc.sum_transactions FROM (
             SELECT DISTINCT UNNEST(array_agg(distinct ce.employees)) AS employee
             FROM (
-                SELECT et.transaction_id AS transaction, array_agg(et.employee_id) AS employees
+                SELECT et.transaction_id AS transaction, UNNEST(array_agg(et.employee_id)) AS employees
                   FROM employees_transactions et
                   LEFT JOIN transactions t ON t.id = et.transaction_id
                   WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
@@ -142,7 +142,7 @@ class TransactionController {
               EXCEPT
                 SELECT distinct UNNEST(array_agg(distinct se.employees)) AS employee
                 FROM (
-                  SELECT et.transaction_id, t.transaction_value, array_agg(et.employee_id) AS employees
+                  SELECT et.transaction_id, t.transaction_value, UNNEST(array_agg(et.employee_id)) AS employees
                   FROM employees_transactions et
                   LEFT JOIN transactions t ON t.id = et.transaction_id
                   WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
@@ -255,11 +255,11 @@ class TransactionController {
 
   async editTransaction(req, res) {
     try {
-      const { id, project_name, transaction_value, employee_id } = req.body;
+      const { id, project_name, transaction_value } = req.body;
 
       const editedTransaction = await db.query(
-        `UPDATE transactions SET project_name = $1, transaction_value = $2, employee_id = $3 WHERE id = $4 RETURNING *;`,
-        [project_name, transaction_value, employee_id, id]
+        `UPDATE transactions SET project_name = $1, transaction_value = $2 WHERE id = $3 RETURNING *;`,
+        [project_name, transaction_value, id]
       );
 
       res.status(200).json(editedTransaction.rows[0]);

@@ -9,6 +9,7 @@ import { setMessage } from "../redux/types/Message";
 import { IMessage, ISettings } from "../types";
 import { getTransactionsTop } from "../redux/types/Transactions";
 import { getSettings } from "../redux/types/Settings";
+import { contactDeveloperStr } from "../consts";
 
 const WebSocketContext = createContext<Socket | null>(null);
 
@@ -40,8 +41,7 @@ export const WebSocketProvider = ({
       dispatch(
         setError({
           message: "Ошибка соединения",
-          description:
-            "Попробуйте перезагрузить сайт или обратитесь к разработчику",
+          description: contactDeveloperStr,
         })
       );
       dispatch(setLoading(false));
@@ -50,7 +50,7 @@ export const WebSocketProvider = ({
     socket.on("disconnect", () => {
       console.log("disconnect");
     });
-    
+
     socket.on("add_mess", (data: IMessage) => {
       dispatch(setMessage({ ...data, active: true, isNewMessage: true }));
     });

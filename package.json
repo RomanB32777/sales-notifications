@@ -17,6 +17,7 @@
     "dockerStop": "sudo docker compose stop",
     "dockerDown": "sudo docker compose down",
     "dockerRmiDangling": "sudo docker rmi $(sudo docker images -f dangling=true -q)",
+    "dockerClearVolume": "docker volume rm sales-notifications_pg_data",
     "dockerClear": "sudo docker system prune -a -f"
   },
   "repository": {

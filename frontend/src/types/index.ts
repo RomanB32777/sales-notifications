@@ -6,12 +6,14 @@ import {
   ITransactionFull,
   ITransactionTopList,
   ITransactionList,
+  ITransactionFilterFields,
+  ITransactionFilterFieldsKeys,
   ITopList,
   ITransactionsState,
   ITransactionsAction,
 } from "./transaction";
 import { IEmployeeShort, IEmployee, IEmployeeFull, IEmployeeAction } from "./employee";
-import { ICurrenciesTypes, ISettings } from "./settings";
+import { ICurrenciesTypes, ILevels, ISettings } from "./settings";
 
 type ICurrencies = {
   [key in ICurrenciesTypes]: string;
@@ -42,6 +44,8 @@ export type {
   ITransactionFull,
   ITransactionTopList,
   ITransactionList,
+  ITransactionFilterFields,
+  ITransactionFilterFieldsKeys,
   ITopList,
   ITransactionsState,
   ITransactionsAction,
@@ -54,5 +58,6 @@ export type {
   IMessageAction,
   IUser,
   IUserAction,
+  ILevels,
   ISettings,
 };

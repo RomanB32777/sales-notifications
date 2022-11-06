@@ -2,12 +2,15 @@ import { IPeriodItemsTypes } from "../utils/dateMethods/types";
 
 type ICurrenciesTypes = "RUB" | "USD" | "AED" | "EUR";
 
-export interface ISettings {
+export interface ILevels {
+  top_level: number;
+  middle_level: number;
+}
+
+export interface ISettings extends ILevels {
   id?: number;
   time_period: IPeriodItemsTypes;
   currency: ICurrenciesTypes;
-  top_level: number;
-  middle_level: number;
   duration_congratulation?: number;
 }
 

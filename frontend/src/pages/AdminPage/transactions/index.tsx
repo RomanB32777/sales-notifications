@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Input } from "antd";
+import { Input, Select } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { getTransactions } from "../../../redux/types/Transactions";
@@ -9,23 +9,27 @@ import LayoutBlock from "../../../components/LayoutBlock";
 import TableComponent from "../../../components/TableComponent";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import ModalComponent from "../../../components/ModalComponent";
-import TransactionFormBlock, {
-  IFormTransactionData,
-} from "../transactionForm";
+import TransactionFormBlock, { IFormTransactionData } from "../transactionForm";
 import axiosClient from "../../../axiosClient";
-import { ITransactionList } from "../../../types";
+import { ITransactionFilterFieldsKeys, ITransactionList } from "../../../types";
 import { tableColumns } from "./tableData";
 import { getEmployees } from "../../../redux/types/Employees";
+import {
+  filterTransactionFields,
+  inclinedFilterTransactionFields,
+} from "../../../consts";
 
 const { Search } = Input;
 
-const TransactionsBlock =  ({ socket }: { socket: any }) => {
+const TransactionsBlock = ({ socket }: { socket: any }) => {
   const dispatch = useAppDispatch();
   const { loading, transactions, settings } = useAppSelector((state) => state);
 
   const [tableData, setTableData] = useState<ITransactionList[]>([]);
   const [editedTransaction, setEditedTransaction] =
     useState<IFormTransactionData | null>(null);
+  const [selectedFilterField, setSelectedFilterField] =
+    useState<ITransactionFilterFieldsKeys>("project_name");
 
   const { transactions_full } = transactions;
 
@@ -44,10 +48,39 @@ const TransactionsBlock =  ({ socket }: { socket: any }) => {
     }
   };
 
-  const onSearch = (name: string) => {
+  const onChangeFilterField = (value: ITransactionFilterFieldsKeys) =>
+    setSelectedFilterField(value);
+
+  const onSearch = (value: string) => {
     const filteredTableData = transactions_full.length
       ? transactions_full
-          .filter(({ project_name }) => project_name.includes(name))
+          .filter((transaction) => {
+            switch (selectedFilterField) {
+              case "employees":
+                return transaction[selectedFilterField].some(
+                  ({ employee_name }) =>
+                    employee_name.toUpperCase().includes(value.toUpperCase())
+                );
+
+              case "project_name":
+                return transaction[selectedFilterField]
+                  .toUpperCase()
+                  .includes(value.toUpperCase());
+
+              case "currency":
+                return transaction[selectedFilterField]
+                  .toUpperCase()
+                  .includes(value.toUpperCase());
+
+              case "transaction_value":
+                return String(transaction[selectedFilterField])
+                  .toUpperCase()
+                  .includes(value.toUpperCase());
+
+              default:
+                return transaction[selectedFilterField];
+            }
+          })
           .map((transaction) => ({
             ...transaction,
             key: transaction.id,
@@ -85,8 +118,16 @@ const TransactionsBlock =  ({ socket }: { socket: any }) => {
         title={"Сделки"}
         headerElements={
           <>
+            <Select
+              value={selectedFilterField}
+              options={filterTransactionFields}
+              onChange={onChangeFilterField}
+              placeholder="Фильтрация по..."
+              className="filter-select"
+              style={{ width: 180, marginRight: 20 }}
+            />
             <Search
-              placeholder="Найти сделки по названию проекта"
+              placeholder={`Найти сделки по ${inclinedFilterTransactionFields[selectedFilterField]}`}
               onSearch={onSearch}
               style={{ width: 350 }}
               allowClear
@@ -107,10 +148,10 @@ const TransactionsBlock =  ({ socket }: { socket: any }) => {
               align: "center",
               render: (_: any, transaction) => (
                 <>
-                  {/* <EditOutlined
+                  <EditOutlined
                     onClick={() => openEditModal(transaction)}
                     style={{ cursor: "pointer", fontSize: 20, marginRight: 20 }}
-                  /> */}
+                  />
                   <ConfirmPopup
                     confirm={() => deleteTransaction(transaction.id)}
                   >
@@ -132,9 +173,18 @@ const TransactionsBlock =  ({ socket }: { socket: any }) => {
         open={Boolean(editedTransaction)}
         title="Редактировать сделку"
         onCancel={closeModal}
-        width={880}
+        width={1000}
       >
-        <TransactionFormBlock transaction={editedTransaction} socket={socket} />
+        <TransactionFormBlock
+          transaction={editedTransaction}
+          socket={socket}
+          layout={{
+            wrapperCol: { span: 21 },
+            labelCol: { span: 3 },
+            labelWrap: true,
+          }}
+          successMethod={closeModal}
+        />
       </ModalComponent>
     </>
   );

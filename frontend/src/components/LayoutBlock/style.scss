@@ -1,7 +1,10 @@
 .site-layout-block {
   margin: 24px 0;
   padding: 24px;
-  background: #fff;
+
+  &.withBackground {
+    background: #fff;
+  }
 
   h2.title {
     margin-bottom: 20px;

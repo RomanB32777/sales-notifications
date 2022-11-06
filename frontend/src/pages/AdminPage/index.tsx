@@ -9,6 +9,7 @@ import AuthBlock from "./auth";
 import EmployeesBlock from "./employees";
 import TransactionsBlock from "./transactions";
 import SettingsBlock from "./settings";
+import { contactDeveloperStr } from "../../consts";
 import "./style.scss";
 
 const AdminPage = () => {
@@ -17,22 +18,24 @@ const AdminPage = () => {
 
   if (!socket)
     return (
-      <Alert
-        message="Ошибка подключения"
-        description="Попробуйте перезагрузить сайт или обратитесь к разработчику"
-        type="error"
-        style={{ margin: " 24px 0" }}
-      />
+      <LayoutBlock isWithoutBackground noHeader>
+        <Alert
+          message="Ошибка подключения"
+          description={contactDeveloperStr}
+          type="error"
+        />
+      </LayoutBlock>
     );
 
   if (!!Object.keys(error).length && socket && !socket.connected)
     return (
-      <Alert
-        message={error.message}
-        description={error.description}
-        type="error"
-        style={{ margin: " 24px 0" }}
-      />
+      <LayoutBlock isWithoutBackground noHeader>
+        <Alert
+          message={error.message}
+          description={error.description}
+          type="error"
+        />
+      </LayoutBlock>
     );
 
   return (
@@ -42,7 +45,14 @@ const AdminPage = () => {
       ) : (
         <>
           <LayoutBlock title="Создать поздравление">
-            <TransactionFormBlock socket={socket} />
+            <TransactionFormBlock
+              socket={socket}
+              layout={{
+                wrapperCol: { span: 22 },
+                labelCol: { span: 2 },
+                labelWrap: true,
+              }}
+            />
           </LayoutBlock>
           <SettingsBlock socket={socket} />
           <EmployeesBlock socket={socket} />
