@@ -1,6 +1,12 @@
 .main-page {
   background: #000;
+  min-height: 100vh;
 }
+
+.table-row {
+  height: 25%;
+}
+
 .level-employees {
   padding: 0 20px;
   border-bottom: 1px solid #fff; //var(--main-text-color);
@@ -8,10 +14,15 @@
 
   .employee-card {
     background: transparent;
-    max-width: 260px;
+    max-width: 240px;
 
     .ant-card-head {
       padding: 0;
+    }
+
+    .ant-card-head-title {
+      overflow: visible;
+      padding: 8px 0;
     }
 
     .employee-text {
@@ -22,18 +33,18 @@
 
       &.employee-sum {
         color: #fff; //var(--main-text-color);
-        font-size: 1.5rem;
+        font-size: 1.7rem;
       }
 
       &.employee-name {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
         color: #fff;
       }
     }
 
     .ant-card-cover {
       background: #cccccc;
-      height: 260px;
+      height: 255px;
     }
 
     .ant-card-body {
@@ -60,10 +71,10 @@
   }
 
   h3 {
-    font-size: 2rem;
+    font-size: 3rem;
   }
 
   p {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }

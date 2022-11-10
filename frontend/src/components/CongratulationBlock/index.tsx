@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Drawer, Row, Col } from "antd";
 import useSound from "use-sound";
 
 import Collage from "../Collage";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { getTransactionsTop } from "../../redux/types/Transactions";
+import { getTransactions, getTransactionsTop } from "../../redux/types/Transactions";
 import { hideMessage } from "../../redux/types/Message";
 import { formatNumber } from "../../utils";
 
@@ -12,6 +13,7 @@ import sound from "../../assets/sounds/fanfary.mp3";
 import "./style.scss";
 
 const CongratulationBlock = () => {
+  const { pathname } = useLocation();
   const dispatch = useAppDispatch();
   const { message, settings } = useAppSelector((state) => state);
   const {
@@ -29,6 +31,7 @@ const CongratulationBlock = () => {
   const onClose = () => {
     dispatch(hideMessage());
     settings && dispatch(getTransactionsTop(settings));
+    pathname === "/admin" && dispatch(getTransactions());
     stop();
   };
 
@@ -69,7 +72,7 @@ const CongratulationBlock = () => {
               <Collage
                 images={employees.map(
                   ({ employee_name, employee_photo, id }) => ({
-                    src: `/images/${employee_photo}`, 
+                    src: `/images/${employee_photo}`,
                     alt: employee_name,
                     key: id,
                   })

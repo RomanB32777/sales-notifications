@@ -26,7 +26,7 @@ const FlippedCard = ({
   const { settings } = useAppSelector((state) => state);
   return (
     <Flipped flipId={id}>
-      <Col span={4}>
+      <Col xs={4} xxl={2}>
         <Card
           className="employee-card"
           title={
@@ -166,6 +166,7 @@ const MainPage = () => {
     <div className="page">
       <div className="main-page">
         <Flipper
+          className="table-wrapper"
           flipKey={Object.keys(transactions_top)
             .map((key) =>
               transactions_top[key as keyof ITopList].length
@@ -179,20 +180,24 @@ const MainPage = () => {
           {Object.keys(transactions_top).map((key) => {
             const keyOfTopList = key as keyof ITopList;
             return (
-              <Row key={key}>
-                <Col span={5}>
-                  <div className="level-description">
-                    <div>{getLevelDescription()[keyOfTopList]}</div>
-                  </div>
-                </Col>
-                <Col span={19}>
-                  <div className="level-employees">
-                    <Row justify="center" key={key} gutter={[16, 16]}>
-                      {getLevelEmployees(key as keyof ITopList)}
-                    </Row>
-                  </div>
-                </Col>
-              </Row>
+              <div key={key} className="table-row">
+                <Row style={{ height: "100%" }}>
+                  <Col xs={5} xxl={4}> 
+                  {/* style={{ height: "100%" }} */}
+                    <div className="level-description">
+                      <div>{getLevelDescription()[keyOfTopList]}</div>
+                    </div>
+                  </Col>
+                  <Col xs={19} xxl={20}> 
+                  {/* style={{ height: "100%" }} */}
+                    <div className="level-employees">
+                      <Row justify="space-evenly" key={key} gutter={[16, 16]}>
+                        {getLevelEmployees(key as keyof ITopList)}
+                      </Row>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
             );
           })}
         </Flipper>
