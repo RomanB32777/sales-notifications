@@ -10,21 +10,20 @@ services:
     expose:
       - 5432
     environment:
-      - PORT=5000
-      - NODE_ENV=production
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test123
       - POSTGRES_DB=sales
+    restart: unless-stopped
     networks:
       - web
 
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
+      - "3000:3000"
     environment:
-      - PORT=5000
-      - NODE_ENV=production
+      - PORT=3000
+      # - NODE_ENV=production
       - DB_HOST=db
       - DB_USER=postgres
       - DB_PASSWORD=test123
@@ -34,6 +33,7 @@ services:
       - db
     volumes:
       - ./backend/uploads:/backend/uploads
+    restart: unless-stopped
     networks:
       - web
 
@@ -45,6 +45,7 @@ services:
       - backend
     volumes:
       - ./nginx:/etc/nginx/conf.d
+    restart: unless-stopped
     networks:
       - web
 
@@ -59,6 +60,7 @@ services:
       - nginx
     ports:
       - "80:80"
+    restart: unless-stopped
     networks:
       - web
 

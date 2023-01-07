@@ -193,8 +193,14 @@ class TransactionController {
         const emptyEmployees = await db.query(`
           SELECT jsonb_build_array(e.*) as employees
           FROM employees e
-          LEFT JOIN employees_transactions et on e.id = et.employee_id
-          WHERE et.employee_id IS NULL;`);
+          WHERE e.id NOT IN (
+            SELECT e.id
+            FROM employees e
+            LEFT JOIN employees_transactions et on e.id = et.employee_id
+            LEFT JOIN transactions t ON t.id = et.transaction_id
+            WHERE ${getTimeCurrentPeriod("t.created_at", time_period)}
+            AND et.employee_id IS NOT NULL
+          );`);
 
         const filteredTransactions = totalObj.length
           ? totalObj.reduce((acc, curr) => {
